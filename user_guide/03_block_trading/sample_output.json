@@ -1,0 +1,46 @@
+{
+  "use_case": "03_block_trading",
+  "generated_at": "2025-07-20",
+  "note": "Yêu cầu tài khoản Pro. Dữ liệu bên dưới là mẫu minh họa.",
+  "foreign_trading": {
+    "symbol": "VNM",
+    "limit": 10,
+    "data": [
+      { "date": "2025-07-18", "buy_volume": 850000, "sell_volume": 320000, "net_volume": 530000 },
+      { "date": "2025-07-17", "buy_volume": 120000, "sell_volume": 980000, "net_volume": -860000 },
+      { "date": "2025-07-16", "buy_volume": 650000, "sell_volume": 450000, "net_volume": 200000 },
+      { "date": "2025-07-15", "buy_volume": 720000, "sell_volume": 580000, "net_volume": 140000 },
+      { "date": "2025-07-14", "buy_volume": 380000, "sell_volume": 890000, "net_volume": -510000 }
+    ]
+  },
+  "prop_trade": {
+    "symbol": "HPG",
+    "limit": 5,
+    "data": [
+      { "date": "2025-07-18", "firm_name": "Công ty CP CK XYZ", "buy_volume": 500000, "sell_volume": 200000 },
+      { "date": "2025-07-17", "firm_name": "Công ty CP CK ABC", "buy_volume": 150000, "sell_volume": 600000 }
+    ]
+  },
+  "insider_trading": {
+    "symbol": "FPT",
+    "limit": 5,
+    "data": [
+      {
+        "date": "2025-06-15",
+        "person_name": "Nguyễn Văn A",
+        "position": "Chủ tịch HĐQT",
+        "transaction_type": "Mua",
+        "volume": 100000,
+        "price": 95200.0
+      },
+      {
+        "date": "2025-06-01",
+        "person_name": "Trần Thị B",
+        "position": "Thành viên HĐQT",
+        "transaction_type": "Bán",
+        "volume": 50000,
+        "price": 96500.0
+      }
+    ]
+  }
+}

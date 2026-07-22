@@ -1,0 +1,33 @@
+{
+  "use_case": "04_order_book",
+  "generated_at": "2025-07-20",
+  "note": "Yêu cầu tài khoản Pro. Dữ liệu bên dưới là mẫu minh họa.",
+  "bid_ask": {
+    "symbol": "VNM",
+    "best_bid": 68900.0,
+    "bid_volume": 25400,
+    "best_ask": 69100.0,
+    "ask_volume": 18200,
+    "spread": 200.0
+  },
+  "depth": {
+    "symbol": "VNM",
+    "ask_levels": [
+      { "price": 69500.0, "volume": 35000 },
+      { "price": 69300.0, "volume": 28500 },
+      { "price": 69100.0, "volume": 18200 }
+    ],
+    "bid_levels": [
+      { "price": 68900.0, "volume": 25400 },
+      { "price": 68700.0, "volume": 42000 },
+      { "price": 68500.0, "volume": 61000 }
+    ]
+  },
+  "obi_analysis": {
+    "symbol": "VNM",
+    "total_bid_volume": 128400,
+    "total_ask_volume": 81700,
+    "obi": 0.2854,
+    "signal": "MUA RÒNG 📈"
+  }
+}

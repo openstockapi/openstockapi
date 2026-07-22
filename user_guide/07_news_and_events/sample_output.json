@@ -1,0 +1,49 @@
+{
+  "use_case": "07_news_and_events",
+  "generated_at": "2025-07-20",
+  "company_news": {
+    "symbol": "VNM",
+    "limit": 5,
+    "data": [
+      {
+        "title": "VNM công bố kết quả kinh doanh Quý 2/2025 vượt kế hoạch",
+        "published_at": "2025-07-15T09:30:00+07:00",
+        "source": "KB Securities",
+        "url": "https://kbs.com.vn/news/vnm-q2-2025"
+      },
+      {
+        "title": "Vinamilk đẩy mạnh xuất khẩu sang thị trường Trung Đông và Châu Phi",
+        "published_at": "2025-07-10T14:00:00+07:00",
+        "source": "KB Securities",
+        "url": "https://kbs.com.vn/news/vnm-export"
+      },
+      {
+        "title": "VNM ký kết hợp tác chiến lược với tập đoàn sữa hàng đầu Nhật Bản",
+        "published_at": "2025-07-05T10:15:00+07:00",
+        "source": "KB Securities",
+        "url": "https://kbs.com.vn/news/vnm-japan"
+      }
+    ]
+  },
+  "company_events": {
+    "symbol": "FPT",
+    "limit": 5,
+    "data": [
+      {
+        "event_date": "2025-08-15",
+        "event_type": "Ngày đăng ký cuối cùng nhận cổ tức",
+        "description": "Tỷ lệ cổ tức: 20% (2,000 VND/cổ phiếu), hình thức trả tiền mặt, ngày thanh toán dự kiến 01/09/2025"
+      },
+      {
+        "event_date": "2025-09-01",
+        "event_type": "Ngày trả cổ tức",
+        "description": "FPT thanh toán cổ tức đợt 1/2025 với tỷ lệ 20%, tương đương 2,000 VND/cổ phiếu"
+      },
+      {
+        "event_date": "2025-10-20",
+        "event_type": "Họp Đại hội Cổ đông bất thường",
+        "description": "Thảo luận kế hoạch phát hành thêm cổ phiếu ESOP cho nhân viên và kế hoạch mở rộng thị trường quốc tế"
+      }
+    ]
+  }
+}

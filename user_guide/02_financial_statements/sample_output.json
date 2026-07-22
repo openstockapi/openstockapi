@@ -1,0 +1,75 @@
+{
+  "use_case": "02_financial_statements",
+  "generated_at": "2025-07-20",
+  "balance_sheet": {
+    "symbol": "VNM",
+    "period": "annual",
+    "data": [
+      {
+        "year": 2024,
+        "total_assets": 37250000000000,
+        "total_liabilities": 9850000000000,
+        "equity": 27400000000000
+      },
+      {
+        "year": 2023,
+        "total_assets": 35800000000000,
+        "total_liabilities": 9200000000000,
+        "equity": 26600000000000
+      }
+    ]
+  },
+  "income_statement": {
+    "symbol": "FPT",
+    "period": "quarter",
+    "data": [
+      {
+        "year": 2025,
+        "quarter": 1,
+        "net_revenue": 15200000000000,
+        "gross_profit": 5800000000000,
+        "net_profit": 2100000000000
+      },
+      {
+        "year": 2024,
+        "quarter": 4,
+        "net_revenue": 17500000000000,
+        "gross_profit": 6700000000000,
+        "net_profit": 2450000000000
+      }
+    ]
+  },
+  "cashflow": {
+    "symbol": "VIC",
+    "period": "annual",
+    "data": [
+      {
+        "year": 2024,
+        "operating_cashflow": 12500000000000,
+        "investing_cashflow": -25000000000000,
+        "financing_cashflow": 8500000000000
+      }
+    ]
+  },
+  "ratios": {
+    "symbol": "HPG",
+    "data": [
+      {
+        "year": 2024,
+        "pe": 9.85,
+        "pb": 1.42,
+        "roe": 0.1423,
+        "roa": 0.0815,
+        "eps": 2850.0
+      },
+      {
+        "year": 2023,
+        "pe": 11.20,
+        "pb": 1.35,
+        "roe": 0.1205,
+        "roa": 0.0680,
+        "eps": 2430.0
+      }
+    ]
+  }
+}

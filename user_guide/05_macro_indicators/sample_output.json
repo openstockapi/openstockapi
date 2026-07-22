@@ -1,0 +1,24 @@
+{
+  "use_case": "05_macro_indicators",
+  "generated_at": "2025-07-20",
+  "indicators": {
+    "data": [
+      { "date": "2025-06-30", "indicator_name": "Cung tiền M2",       "value": 16850000.0, "unit": "Tỷ VND" },
+      { "date": "2025-06-30", "indicator_name": "Tín dụng hệ thống",  "value": 14230000.0, "unit": "Tỷ VND" },
+      { "date": "2025-05-31", "indicator_name": "Cung tiền M2",       "value": 16620000.0, "unit": "Tỷ VND" },
+      { "date": "2025-05-31", "indicator_name": "Tín dụng hệ thống",  "value": 14010000.0, "unit": "Tỷ VND" },
+      { "date": "2025-04-30", "indicator_name": "Cung tiền M2",       "value": 16380000.0, "unit": "Tỷ VND" },
+      { "date": "2025-04-30", "indicator_name": "Tín dụng hệ thống",  "value": 13780000.0, "unit": "Tỷ VND" }
+    ]
+  },
+  "growth_analysis": {
+    "Cung tiền M2": [
+      { "date": "2025-05-31", "value": 16620000.0, "mom_growth_pct": 1.38 },
+      { "date": "2025-06-30", "value": 16850000.0, "mom_growth_pct": 1.38 }
+    ],
+    "Tín dụng hệ thống": [
+      { "date": "2025-05-31", "value": 14010000.0, "mom_growth_pct": 1.67 },
+      { "date": "2025-06-30", "value": 14230000.0, "mom_growth_pct": 1.57 }
+    ]
+  }
+}

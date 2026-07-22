@@ -1,0 +1,30 @@
+{
+  "use_case": "06_mutual_funds",
+  "generated_at": "2025-07-20",
+  "fund_details": {
+    "fund_id": 23,
+    "name": "Vietnam Enterprise Securities Active Fund (VESAF)",
+    "ticker": "VESAF",
+    "nav": 28450.0,
+    "management_fee": 0.015,
+    "total_assets": 12500000000000,
+    "holdings": [
+      { "symbol": "VHM", "weight": 0.085, "value": 1062500000000 },
+      { "symbol": "FPT", "weight": 0.072, "value": 900000000000  },
+      { "symbol": "MBB", "weight": 0.068, "value": 850000000000  },
+      { "symbol": "VNM", "weight": 0.059, "value": 737500000000  },
+      { "symbol": "HPG", "weight": 0.054, "value": 675000000000  },
+      { "symbol": "TCB", "weight": 0.048, "value": 600000000000  },
+      { "symbol": "VPB", "weight": 0.042, "value": 525000000000  },
+      { "symbol": "CTG", "weight": 0.038, "value": 475000000000  },
+      { "symbol": "ACB", "weight": 0.035, "value": 437500000000  },
+      { "symbol": "GVR", "weight": 0.031, "value": 387500000000  }
+    ]
+  },
+  "fund_comparison": [
+    { "fund_id": 23, "ticker": "VESAF",      "nav": 28450.0, "management_fee": 0.015 },
+    { "fund_id": 27, "ticker": "VFMVSF",     "nav": 19820.0, "management_fee": 0.008 },
+    { "fund_id": 35, "ticker": "DCVFMVN30",  "nav": 22100.0, "management_fee": 0.008 },
+    { "fund_id":  9, "ticker": "BVPF",       "nav": 15630.0, "management_fee": 0.015 }
+  ]
+}

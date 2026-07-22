@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openstockapi"
+version = "0.2.3"
+description = "Vietnam stock market data library — open source data plane"
+readme = "README.md"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
+license = { text = "AGPL-3.0-only" }
+requires-python = ">=3.10"
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.0",
+]
+
+[tool.setuptools]
+packages = [
+    "openstockapi",
+    "openstockapi.core",
+    "openstockapi.providers",
+    "openstockapi.api",
+    "openstockapi.config",
+    "openstockapi.license"
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=2.0"]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "mypy",
+    "ruff"
+]

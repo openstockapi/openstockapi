@@ -1,0 +1,27 @@
+{
+  "name": "openstockapi",
+  "version": "0.2.3",
+  "description": "Official JavaScript SDK for OpenStockAPI - Python financial data plane wrapper (Placeholder)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [
+    "stock",
+    "vietnam",
+    "finance",
+    "openstockapi",
+    "trading",
+    "market-data"
+  ],
+  "author": "",
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/openstockapi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/openstockapi/issues"
+  },
+  "homepage": "https://github.com/yourusername/openstockapi#readme"
+}

@@ -1,8 +1,0 @@
-- [x] Implement `get_us_symbols` in `openstockapi/providers/core.py`
-- [x] Add `symbols: ["core"]` under `US` in `settings.py`
-- [x] Expose `us_symbols` in `openstockapi/api/us_stock.py`
-- [x] Register `us_symbols` in `openstockapi/__init__.py`
-- [x] Add unit test for `us_symbols` in `tests/unit/test_us_stock.py`
-- [x] Update UAT runner to test `us_symbols`
-- [x] Enrich parameters and document `us_symbols` in `user_guide/us_stock/01_us_market_data.md`
-- [x] Run verification tests and UAT

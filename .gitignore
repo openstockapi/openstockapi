@@ -51,5 +51,6 @@ uat/
 # Local scratch and playground files
 scratch/
 publish.ps1
+task.md
 
 

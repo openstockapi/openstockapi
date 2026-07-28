@@ -1,6 +1,12 @@
 <div align="center">
   <h1> OpenStockAPI</h1>
-  <p><strong>A modular, multi-source Python Data Plane for Vietnamese & International financial market data.</strong></p>
+  <img src="public/banner.png" alt="OpenStockAPI Banner" width="100%" />
+  
+  <p align="center">
+    <b>English</b> · <a href="./README_VN.md">Tiếng Việt</a> · <a href="./README_JP.md">日本語</a> · <a href="./README_CN.md">简体中文</a> · <a href="./README_HK.md">繁體中文</a>
+  </p>
+
+  <p><strong>Free, open-source Python library to download historical stock data (OHLCV), real-time financial market quotes, orderbook, and news from Vietnam and global markets.</strong></p>
 
   <p>
     <a href="https://pypi.org/project/openstockapi/"><img src="https://img.shields.io/pypi/v/openstockapi.svg?color=blue&label=PyPI" alt="PyPI version"></a>
@@ -43,9 +49,9 @@
 <a id="about"></a>
 ## About The Project
 
-**OpenStockAPI** is an open-source Python library that acts as a modular **Data Plane** for collecting and standardizing financial data from multiple Vietnamese and international sources.
+**OpenStockAPI** is a free, open-source Python library designed to fetch, download, and standardize historical stock data (OHLCV), real-time financial market quotes, orderbook, ticks, news, and financials from Vietnam (`HOSE`, `HNX`, `UPCOM`), US, Japan, China, Hong Kong, and Australia stock markets, as well as global Crypto and Forex pairs.
 
-It is designed to be the upstream data acquisition layer for financial applications — handling provider fallback, rate limiting, and tier-based access control — so your application logic never has to worry about data source reliability.
+It is designed to be the upstream data acquisition layer for financial applications, algorithmic trading systems, Excel add-ins, and Amibroker plugins — handling provider fallback, local caching, rate limiting, and tier-based access control — so your application logic never has to worry about data source reliability.
 
 > 📘 A Vietnamese version of this README is available: **[README_VN.md](./README_VN.md)**
 

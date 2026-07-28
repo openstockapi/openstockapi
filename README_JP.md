@@ -1,6 +1,12 @@
 <div align="center">
   <h1> OpenStockAPI</h1>
-  <p><strong>ベトナムおよび国際金融市場データのためのモジュール式、マルチソース Python データプレーン。</strong></p>
+  <img src="public/banner.png" alt="OpenStockAPI Banner" width="100%" />
+  
+  <p align="center">
+    <a href="./README.md">English</a> · <a href="./README_VN.md">Tiếng Việt</a> · <b>日本語</b> · <a href="./README_CN.md">简体中文</a> · <a href="./README_HK.md">繁體中文</a>
+  </p>
+
+  <p><strong>ベトナムおよび国際株式のヒストリカルデータ (OHLCV)、リアルタイム株価、オーダーブック、歩み値、金融ニュース、財務諸表を無料でダウンロードできる、オープンソースの Python 金融データライブラリ。</strong></p>
 
   <p>
     <a href="https://pypi.org/project/openstockapi/"><img src="https://img.shields.io/pypi/v/openstockapi.svg?color=blue&label=PyPI" alt="PyPI version"></a>
@@ -43,9 +49,9 @@
 <a id="about"></a>
 ## プロジェクトについて
 
-**OpenStockAPI** は、ベトナムおよび国際金融市場の複数データ源からデータを収集・標準化するモジュール式の **データプレーン** として機能する、オープンソースの Python ライブラリです。
+**OpenStockAPI** は、ベトナム（`HOSE`, `HNX`, `UPCOM`）、米国、日本、中国、香港、オーストラリアの株式、ならびに暗号資産（Crypto）や外国為替（Forex）市場のヒストリカルデータ（OHLCV）、リアルタイム株価、オーダーブック、歩み値、ニュース、財務諸表を無料で取得・標準化する、オープンソースの Python 金融データライブラリです。
 
-金融アプリケーションの上流データ取得層として機能するように設計されており、プロバイダーのフォールバック、レート制限、枠階ベースのアクセス制御を処理するため、アプリケーション層はデータ源 of 信頼性を心配する必要がありません。
+金融アプリケーション、システムトレード（自動売買システム）、Excelアドイン、およびAmibrokerプラグインの上游データレイヤーとして機能するように設計されており、データソースの自動故障検知・代替ソース切り替え（provider fallback）、ローカルキャッシュ、レート制限、およびAPIキー権限制御を自動で処理します。
 
 > 📘 日本語以外のバージョンも用意されています: **[English README](./README.md)** | **[README_VN.md](./README_VN.md)**
 

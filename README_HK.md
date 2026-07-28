@@ -1,6 +1,12 @@
 <div align="center">
   <h1> OpenStockAPI</h1>
-  <p><strong>一個模組化、多數據源的 Python 數據中台，適用於越南及國際金融市場數據。</strong></p>
+  <img src="public/banner.png" alt="OpenStockAPI Banner" width="100%" />
+  
+  <p align="center">
+    <a href="./README.md">English</a> · <a href="./README_VN.md">Tiếng Việt</a> · <a href="./README_JP.md">日本語</a> · <a href="./README_CN.md">简体中文</a> · <b>繁體中文</b>
+  </p>
+
+  <p><strong>免費、開源的 Python 金融數據接口庫，支持下載越南及國際股票歷史 K 線 (OHLCV)、即時行情報價、訂單簿、逐筆交易、財經新聞和財務報表。</strong></p>
 
   <p>
     <a href="https://pypi.org/project/openstockapi/"><img src="https://img.shields.io/pypi/v/openstockapi.svg?color=blue&label=PyPI" alt="PyPI version"></a>
@@ -43,9 +49,9 @@
 <a id="about"></a>
 ## 關於項目
 
-**OpenStockAPI** 是一個開源的 Python 函數庫，旨在作為一個模組化的 **數據中台 (Data Plane)**，用於收集及標準化來自越南和多個市場的金融數據。
+**OpenStockAPI** 是一個免費、開源的 Python 金融數據獲取庫，旨在作為一個模組化的 **數據中台 (Data Plane)**，用於下載和標準化來自越南 (`HOSE`, `HNX`, `UPCOM`)、美股、日股、港股、A股、澳股以及全球加密貨幣和外匯市場的历史股票數據 (OHLCV)、即時行情、訂單簿、財經新聞和財務報表。
 
-它專為金融應用程序的上游數據獲取層而設計，處理數據源故障轉移、訪問頻率限制和權限控制，使您的應用程序層無需擔心數據源的可靠性。
+它專為金融數據應用、量化交易系統、Excel add-in 和 Amibroker 插件的上游數據層而設計，自動處理數據源故障轉移 (provider fallback)、本地緩存、訪問頻率限制 (rate limit) 和 API 權限控制。
 
 > 📘 其他語言版本的 README：**[英文版](./README.md)** | **[越南文版](./README_VN.md)**
 

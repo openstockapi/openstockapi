@@ -1,6 +1,12 @@
 <div align="center">
   <h1> OpenStockAPI</h1>
-  <p><strong>Thư viện Python mã nguồn mở — Data Plane mô-đun hóa cho dữ liệu thị trường tài chính Việt Nam & Quốc tế.</strong></p>
+  <img src="public/banner.png" alt="OpenStockAPI Banner" width="100%" />
+  
+  <p align="center">
+    <a href="./README.md">English</a> · <b>Tiếng Việt</b> · <a href="./README_JP.md">日本語</a> · <a href="./README_CN.md">简体中文</a> · <a href="./README_HK.md">繁體中文</a>
+  </p>
+
+  <p><strong>Thư viện Python miễn phí, mã nguồn mở giúp tải dữ liệu lịch sử chứng khoán (OHLCV), bảng giá trực tuyến (real-time), sổ lệnh, khớp lệnh chi tiết và tin tức tài chính Việt Nam & Quốc tế.</strong></p>
 
   <p>
     <a href="https://pypi.org/project/openstockapi/"><img src="https://img.shields.io/pypi/v/openstockapi.svg?color=blue&label=PyPI" alt="PyPI version"></a>
@@ -48,9 +54,9 @@
 <a id="gioi-thieu"></a>
 ## Giới thiệu dự án
 
-**OpenStockAPI** là thư viện Python mã nguồn mở, đóng vai trò là **Data Plane** (tầng thu thập và chuẩn hóa dữ liệu) cho các ứng dụng tài chính.
+**OpenStockAPI** là thư viện Python miễn phí, mã nguồn mở đóng vai trò là **Data Plane** chuyên nghiệp để tải, phân tích và chuẩn hóa dữ liệu lịch sử chứng khoán (OHLCV), bảng giá trực tuyến (real-time quotes), sổ lệnh (orderbook), khớp lệnh chi tiết (ticks), tin tức doanh nghiệp, và báo cáo tài chính từ thị trường Việt Nam (`HOSE`, `HNX`, `UPCOM`), Mỹ, Nhật Bản, Trung Quốc, Hồng Kông, Úc cùng các cặp Crypto và Forex toàn cầu.
 
-Thư viện tổng hợp dữ liệu từ nhiều nguồn cấp (KB Securities, Vietcap, MSN Finance...) với cơ chế tự động chuyển nguồn khi gián đoạn — ứng dụng của bạn không cần biết nguồn dữ liệu đến từ đâu, chỉ cần gọi API và nhận kết quả.
+Thư viện được thiết kế tối ưu làm tầng thu thập dữ liệu nguồn vào cho các ứng dụng tài chính, hệ thống giao dịch tự động (algorithmic trading), Excel add-in và Amibroker plugin — xử lý tự động cơ chế chuyển nguồn (provider fallback), rate limiting cục bộ, cache validation và kiểm soát phân quyền thiết bị.
 
 <p align="right">(<a href="#readme-top">lên đầu trang ↑</a>)</p>
 

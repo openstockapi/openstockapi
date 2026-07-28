@@ -48,4 +48,8 @@ uat/
 .env
 .env.local
 
+# Local scratch and playground files
+scratch/
+publish.ps1
+
 

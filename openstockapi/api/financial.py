@@ -1,10 +1,7 @@
 from typing import List, Optional, Union, Any
 from openstockapi.core.types import DataTier
-from openstockapi.core.security import enforce_tier_and_rate_limit
 from openstockapi.core.utils import parse_market_symbol
-from openstockapi.config.settings import get_default_providers
-from openstockapi.providers import get_provider
-from openstockapi.core.exceptions import ProviderUnavailableError
+from openstockapi.core.gateway import gateway
 
 try:
     import pandas as pd
@@ -13,37 +10,43 @@ except ImportError:
     HAS_PANDAS = False
 
 def _fetch_financial(symbol: str, stmt_type: str, period: str, provider: Optional[str], market: str = "VN") -> Union[List[dict], Any]:
-    enforce_tier_and_rate_limit(DataTier.FREE, f"financial.{stmt_type}")
     symbol, market = parse_market_symbol(symbol, market)
     
-    providers_to_try = [provider] if provider else get_default_providers("financials", market)
-    
-    last_err = None
-    for p_name in providers_to_try:
-        p_inst = get_provider(p_name)
-        if not p_inst:
-            continue
-        try:
-            reports = p_inst.get_financial_statements(symbol, stmt_type, period)
-            data_list = [rep.model_dump() for rep in reports]
-            if HAS_PANDAS:
-                return pd.DataFrame(data_list)
-            return data_list
-        except Exception as e:
-            last_err = e
-            continue
+    # Map raw types to standard action names
+    action_map = {
+        "income": "stock.income_statement",
+        "balance": "stock.balance_sheet",
+        "cashflow": "stock.cashflow",
+        "ratios": "stock.ratios",
+    }
+    action = action_map.get(stmt_type, "stock.financials")
 
-    raise ProviderUnavailableError(f"No provider succeeded in fetching financial statement '{stmt_type}' for '{symbol}' (market={market}): {last_err}")
+    reports = gateway.execute(
+        action=action,
+        market=market,
+        required_tier=DataTier.FREE,
+        symbol=symbol,
+        period=period,
+        provider=provider
+    )
+
+    data_list = [rep.model_dump() for rep in reports]
+    if HAS_PANDAS:
+        return pd.DataFrame(data_list)
+    return data_list
 
 def income_statement(symbol: str, period: str = "Q", provider: Optional[str] = None, market: str = "VN") -> Union[List[dict], Any]:
+    """Get income statement."""
     return _fetch_financial(symbol, "income", period, provider, market)
 
 def balance_sheet(symbol: str, period: str = "Q", provider: Optional[str] = None, market: str = "VN") -> Union[List[dict], Any]:
+    """Get balance sheet."""
     return _fetch_financial(symbol, "balance", period, provider, market)
 
 def cashflow(symbol: str, period: str = "Q", provider: Optional[str] = None, market: str = "VN") -> Union[List[dict], Any]:
+    """Get cashflow statement."""
     return _fetch_financial(symbol, "cashflow", period, provider, market)
 
 def ratios(symbol: str, period: str = "Q", provider: Optional[str] = None, market: str = "VN") -> Union[List[dict], Any]:
+    """Get financial ratios."""
     return _fetch_financial(symbol, "ratios", period, provider, market)
-

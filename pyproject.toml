@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openstockapi"
-version = "0.2.3"
+version = "0.10.0"
 description = "Vietnam stock market data library — open source data plane"
 readme = "README.md"
 authors = [
@@ -24,6 +24,7 @@ classifiers = [
 dependencies = [
     "httpx>=0.27",
     "pydantic>=2.0",
+    "websockets>=12.0",
 ]
 
 [tool.setuptools]
@@ -33,8 +34,13 @@ packages = [
     "openstockapi.providers",
     "openstockapi.api",
     "openstockapi.config",
-    "openstockapi.license"
+    "openstockapi.license",
+    "openstockapi.cdk",
+    "openstockapi.cdk.cli"
 ]
+
+[project.scripts]
+openstock-cdk = "openstockapi.cdk.cli:main"
 
 [project.optional-dependencies]
 pandas = ["pandas>=2.0"]

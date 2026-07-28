@@ -1,10 +1,7 @@
 from typing import Optional, Union, Any, List
 from openstockapi.core.types import DataTier
-from openstockapi.core.security import enforce_tier_and_rate_limit
-from openstockapi.core.utils import clean_symbol, parse_market_symbol
-from openstockapi.config.settings import get_default_providers
-from openstockapi.providers import get_provider
-from openstockapi.core.exceptions import ProviderUnavailableError
+from openstockapi.core.utils import parse_market_symbol
+from openstockapi.core.gateway import gateway
 
 # Optional import for Pandas support
 try:
@@ -14,68 +11,42 @@ except ImportError:
     HAS_PANDAS = False
 
 def bid_ask(symbol: str, provider: Optional[str] = None, market: str = "VN") -> Union[dict, Any]:
-    # PRO or PREMIUM Tier required
-    enforce_tier_and_rate_limit(DataTier.PRO, "orderbook.bid_ask")
+    """Get stock bid/ask level details."""
     symbol, market = parse_market_symbol(symbol, market)
-    
-    providers_to_try = [provider] if provider else get_default_providers("orderbook", market)
-    
-    last_err = None
-    for p_name in providers_to_try:
-        p_inst = get_provider(p_name)
-        if not p_inst:
-            continue
-        try:
-            ob = p_inst.get_order_book(symbol)
-            return ob.model_dump()
-        except Exception as e:
-            last_err = e
-            continue
-            
-    raise ProviderUnavailableError(f"No provider succeeded in fetching order book for '{symbol}' (market={market}): {last_err}")
+    ob = gateway.execute(
+        action="stock.order_book",
+        market=market,
+        required_tier=DataTier.PRO,
+        symbol=symbol,
+        provider=provider
+    )
+    return ob.model_dump()
 
 def depth(symbol: str, provider: Optional[str] = None, market: str = "VN") -> Union[dict, Any]:
-    # 10-level depth api
-    enforce_tier_and_rate_limit(DataTier.PRO, "orderbook.depth")
+    """Get stock order book depth details."""
     symbol, market = parse_market_symbol(symbol, market)
-    
-    providers_to_try = [provider] if provider else ["dnse"]
-    
-    last_err = None
-    for p_name in providers_to_try:
-        p_inst = get_provider(p_name)
-        if not p_inst:
-            continue
-        try:
-            ob = p_inst.get_order_book(symbol)
-            return ob.model_dump()
-        except Exception as e:
-            last_err = e
-            continue
-            
-    raise ProviderUnavailableError(f"No provider succeeded in fetching depth for '{symbol}' (market={market}): {last_err}")
+    ob = gateway.execute(
+        action="stock.order_book",
+        market=market,
+        required_tier=DataTier.PRO,
+        symbol=symbol,
+        provider=provider
+    )
+    return ob.model_dump()
 
 def ticks(symbol: str, limit: int = 100, provider: Optional[str] = None, market: str = "VN") -> Union[List[dict], Any]:
-    enforce_tier_and_rate_limit(DataTier.PRO, "orderbook.ticks")
+    """Get intraday ticks transaction history."""
     symbol, market = parse_market_symbol(symbol, market)
-    
-    # Priority for ticks: mas, then kbs
-    providers_to_try = [provider] if provider else ["mas", "kbs"]
-    
-    last_err = None
-    for p_name in providers_to_try:
-        p_inst = get_provider(p_name)
-        if not p_inst:
-            continue
-        try:
-            entries = p_inst.get_intraday_ticks(symbol, limit)
-            data_list = [entry.model_dump() for entry in entries]
-            if HAS_PANDAS:
-                return pd.DataFrame(data_list)
-            return data_list
-        except Exception as e:
-            last_err = e
-            continue
-            
-    raise ProviderUnavailableError(f"No provider succeeded in fetching ticks for '{symbol}' (market={market}): {last_err}")
-
+    # Default priority config in execute when provider is None will override defaults
+    entries = gateway.execute(
+        action="stock.ticks",
+        market=market,
+        required_tier=DataTier.PRO,
+        symbol=symbol,
+        limit=limit,
+        provider=provider
+    )
+    data_list = [entry.model_dump() for entry in entries]
+    if HAS_PANDAS:
+        return pd.DataFrame(data_list)
+    return data_list

@@ -20,3 +20,5 @@ class FundDetails(BaseModel):
     description: Optional[str] = None
     holdings: List[FundHolding]
     provider: str
+    market: str = "vn"
+    asset_class: str = "stock"

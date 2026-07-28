@@ -1,0 +1,189 @@
+{
+  "use_case": "01_cn_market_data",
+  "generated_at": "2026-07-25",
+  "cn_symbols": [
+    "600519",
+    "002594",
+    "300750"
+  ],
+  "cn_ohlcv": [
+    {
+      "symbol": "600519",
+      "timestamp": "2026-07-21 00:00:00",
+      "open": 1305.0,
+      "high": 1309.2,
+      "low": 1301.0,
+      "close": 1305.0,
+      "volume": 125000.0,
+      "provider": "sina",
+      "market": "cn",
+      "asset_class": "stock"
+    }
+  ],
+  "cn_profile": {
+    "symbol": "600519",
+    "company_name": "貴州茅台",
+    "industry": "Beverages—Brewers",
+    "website": "https://www.moutaichina.com",
+    "headcount": 30000,
+    "description": "Kweichow Moutai Co., Ltd. produces and sells Moutai liquor in China...",
+    "provider": "sina",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_financials": {
+    "symbol": "600519",
+    "period_type": "annual",
+    "available_periods": ["2025-12-31"],
+    "periods": [
+      {
+        "period": "2025-12-31",
+        "financials": {
+          "balance_sheet": {
+            "total_assets": 280000000000.0,
+            "total_liabilities": 50000000000.0
+          },
+          "income_statement": {
+            "revenue": 150000000000.0,
+            "net_income": 75000000000.0
+          }
+        }
+      }
+    ],
+    "provider": "yahoo",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_balance_sheet": [
+    {
+      "symbol": "600519",
+      "year": 2025,
+      "quarter": null,
+      "statement_type": "balance",
+      "items": {
+        "total_assets": 280000000000.0,
+        "total_liabilities": 50000000000.0
+      },
+      "provider": "yahoo",
+      "market": "cn",
+      "asset_class": "stock"
+    }
+  ],
+  "cn_income_statement": [
+    {
+      "symbol": "600519",
+      "year": 2025,
+      "quarter": null,
+      "statement_type": "income",
+      "items": {
+        "revenue": 150000000000.0,
+        "net_income": 75000000000.0
+      },
+      "provider": "yahoo",
+      "market": "cn",
+      "asset_class": "stock"
+    }
+  ],
+  "cn_cashflow": [
+    {
+      "symbol": "600519",
+      "year": 2025,
+      "quarter": null,
+      "statement_type": "cashflow",
+      "items": {
+        "operating_cash_flow": 90000000000.0
+      },
+      "provider": "yahoo",
+      "market": "cn",
+      "asset_class": "stock"
+    }
+  ],
+  "cn_ratios": {
+    "symbol": "600519",
+    "ratios": {
+      "pe_trailing": 30.5,
+      "pb": 8.2
+    },
+    "provider": "sina",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_dividends": {
+    "symbol": "600519",
+    "dividends": [
+      {
+        "ex_date": "2025-06-15",
+        "pay_date": null,
+        "amount": 19.1,
+        "type": "Dividend"
+      }
+    ],
+    "provider": "yahoo",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_splits": {
+    "symbol": "600519",
+    "splits": [
+      {
+        "date": "2020-06-25",
+        "ratio": 1.0
+      }
+    ],
+    "provider": "yahoo",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_news": {
+    "symbol": "600519",
+    "news": [
+      {
+        "id": "abc123xyz",
+        "title": "Kweichow Moutai reports earnings growth",
+        "url": "https://finance.yahoo.com/news/example",
+        "published_at": 1784997194,
+        "publisher": "Yahoo Finance",
+        "summary": "Moutai's revenue surged by..."
+      }
+    ],
+    "provider": "google_news",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_quote": {
+    "symbol": "600519",
+    "price": 1305.5,
+    "change": 0.5,
+    "pct_change": 0.04,
+    "volume": 125500.0,
+    "timestamp": "2026-07-25 15:00:00",
+    "provider": "sina",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_order_book": {
+    "symbol": "600519",
+    "asks": [
+      {"price": 1305.6, "volume": 100},
+      {"price": 1305.7, "volume": 200}
+    ],
+    "bids": [
+      {"price": 1305.4, "volume": 150},
+      {"price": 1305.3, "volume": 300}
+    ],
+    "provider": "sina",
+    "market": "cn",
+    "asset_class": "stock"
+  },
+  "cn_tick": [
+    {
+      "timestamp": "2026-07-25 15:00:00",
+      "price": 1305.5,
+      "volume": 10,
+      "direction": "buy",
+      "provider": "sina",
+      "market": "cn",
+      "asset_class": "stock"
+    }
+  ]
+}

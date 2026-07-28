@@ -1,6 +1,6 @@
 import pytest
-from openstockapi.providers.kbs import KBSProvider
-from openstockapi.providers.vci import VCIProvider
+from openstockapi.providers.vn_stock.providers.kbs import KBSProvider
+from openstockapi.providers.vn_stock.providers.vci import VCIProvider
 from openstockapi.core.models import CompanyProfile
 
 def test_kbs_provider_maps_extended_profile_fields(monkeypatch):
@@ -26,10 +26,11 @@ def test_kbs_provider_maps_extended_profile_fields(monkeypatch):
                 "Subsidiaries": [{"NM": "Thép Hòa Phát Dung Quất", "OR": 99.9}]
             }
             
-    monkeypatch.setattr("openstockapi.providers.kbs.http_client.request", lambda *args, **kwargs: MockResponse())
+    monkeypatch.setattr("openstockapi.providers.vn_stock.providers.kbs.http_client.request", lambda *args, **kwargs: MockResponse())
     
     prof = kbs.get_company_profile("HPG")
     assert prof.symbol == "HPG"
+    assert prof.logo_url == "https://www.google.com/s2/favicons?sz=128&domain=hoaphat.com.vn"
     assert prof.tax_code == "0900189284"
     assert prof.ceo == "Nguyễn Việt Thắng"
     assert prof.charter_capital == 58147.0
@@ -48,16 +49,19 @@ def test_vci_provider_maps_profile_fields(monkeypatch):
                 "data": {
                     "viOrganName": "Tập đoàn Hòa Phát",
                     "comGroupCode": "HOSE",
+                    "sector": "Basic Materials",
                     "sectorVn": "Thép",
                     "website": "https://hoaphat.com",
                     "profile": "Mô tả..."
                 }
             }
             
-    monkeypatch.setattr("openstockapi.providers.vci.http_client.request", lambda *args, **kwargs: MockResponse())
+    monkeypatch.setattr("openstockapi.providers.vn_stock.providers.vci.http_client.request", lambda *args, **kwargs: MockResponse())
 
     
     prof = vci.get_company_profile("HPG")
     assert prof.symbol == "HPG"
     assert prof.full_name == "Tập đoàn Hòa Phát"
+    assert prof.sector == "Basic Materials"
+    assert prof.logo_url == "https://www.google.com/s2/favicons?sz=128&domain=hoaphat.com"
     assert prof.tax_code is None

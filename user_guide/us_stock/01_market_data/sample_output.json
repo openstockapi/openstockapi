@@ -1,0 +1,140 @@
+{
+  "use_case": "01_us_market_data",
+  "generated_at": "2026-07-25",
+  "us_ohlcv": [
+    {
+      "symbol": "AAPL",
+      "timestamp": "2026-07-20 20:30:00",
+      "open": 333.0249938964844,
+      "high": 333.7099914550781,
+      "low": 326.1099853515625,
+      "close": 327.0199890136719,
+      "volume": 11178368.0,
+      "provider": "yahoo",
+      "market": "us",
+      "asset_class": "stock"
+    }
+  ],
+  "us_profile": {
+    "symbol": "AAPL",
+    "company_name": "Apple Inc.",
+    "industry": "Consumer Electronics",
+    "website": "https://www.apple.com",
+    "headcount": 166000,
+    "description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets...",
+    "provider": "yahoo",
+    "market": "us",
+    "asset_class": "stock"
+  },
+  "us_balance_sheet": [
+    {
+      "symbol": "AAPL",
+      "year": 2025,
+      "quarter": null,
+      "statement_type": "balance",
+      "items": {
+        "total_assets": 359241000000.0,
+        "total_liabilities": 285508000000.0
+      },
+      "provider": "yahoo",
+      "market": "us",
+      "asset_class": "stock"
+    }
+  ],
+  "us_income_statement": [
+    {
+      "symbol": "AAPL",
+      "year": 2025,
+      "quarter": null,
+      "statement_type": "income",
+      "items": {
+        "revenue": 391035000000.0,
+        "net_income": 93736000000.0
+      },
+      "provider": "yahoo",
+      "market": "us",
+      "asset_class": "stock"
+    }
+  ],
+  "us_cashflow": [
+    {
+      "symbol": "AAPL",
+      "year": 2025,
+      "quarter": null,
+      "statement_type": "cashflow",
+      "items": {
+        "operating_cash_flow": 1000000000.0
+      },
+      "provider": "yahoo",
+      "market": "us",
+      "asset_class": "stock"
+    }
+  ],
+  "us_ratios": [
+    {
+      "symbol": "AAPL",
+      "year": 2026,
+      "quarter": null,
+      "statement_type": "ratios",
+      "items": {
+        "pe": 15.4
+      },
+      "provider": "yahoo",
+      "market": "us",
+      "asset_class": "stock"
+    }
+  ],
+  "us_dividends": {
+    "symbol": "AAPL",
+    "dividends": [
+      {
+        "ex_date": "2026-05-11",
+        "pay_date": null,
+        "amount": 0.27,
+        "type": "Dividend"
+      }
+    ],
+    "provider": "nasdaq",
+    "market": "us",
+    "asset_class": "stock"
+  },
+  "us_splits": {
+    "symbol": "AAPL",
+    "splits": [
+      {
+        "date": "2020-08-31",
+        "ratio": 4.0
+      }
+    ],
+    "provider": "yahoo",
+    "market": "us",
+    "asset_class": "stock"
+  },
+  "us_calendar": {
+    "symbol": "AAPL",
+    "calendar": {
+      "Dividend Date": "2026-05-14",
+      "Ex-Dividend Date": "2026-05-11",
+      "Earnings Date": ["2026-07-31"]
+    },
+    "provider": "yahoo",
+    "market": "us",
+    "asset_class": "stock"
+  },
+  "us_news": {
+    "symbol": "AAPL",
+    "news": [
+      {
+        "id": "12345",
+        "title": "Apple Reports Third Quarter Results",
+        "url": "https://news.google.com/...",
+        "published_at": "2026-07-23T20:19:30Z",
+        "publisher": "Google News",
+        "summary": "Apple today announced financial results for its fiscal 2026 third quarter..."
+      }
+    ],
+    "provider": "google_news",
+    "market": "us",
+    "asset_class": "stock"
+  }
+}

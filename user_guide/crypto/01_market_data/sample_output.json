@@ -1,0 +1,71 @@
+{
+  "use_case": "01_crypto_market_data",
+  "generated_at": "2026-07-26",
+  "ohlcv": [
+    {
+      "timestamp": "2026-07-25 22:00:00",
+      "open": 64214.05,
+      "high": 64214.05,
+      "low": 64182.01,
+      "close": 64206.61,
+      "volume": 572.31956,
+      "provider": "binance",
+      "market": "global",
+      "asset_class": "crypto"
+    }
+  ],
+  "depth": {
+    "symbol": "BTCUSDT",
+    "bids": [
+      {"price": 64238.5, "volume": 4.78},
+      {"price": 64238.0, "volume": 0.09}
+    ],
+    "asks": [
+      {"price": 64238.6, "volume": 0.89},
+      {"price": 64240.0, "volume": 0.02}
+    ],
+    "timestamp": "2026-07-26 00:00:00",
+    "provider": "okx",
+    "market": "global",
+    "asset_class": "crypto"
+  },
+  "derivatives": {
+    "symbol": "BTCUSDT",
+    "open_interest": 58425.018,
+    "funding_rate": -0.00000405,
+    "provider": "bybit",
+    "market": "global",
+    "asset_class": "crypto"
+  },
+  "footprint": {
+    "symbol": "BTCUSDT",
+    "timeframe": "5min",
+    "session_profile": {
+      "poc": 64230.0,
+      "vah": 64300.0,
+      "val": 64100.0,
+      "total_vol": 500.0
+    },
+    "bars": [
+      {
+        "timestamp": "2026-07-22 01:00:00",
+        "ohlc": { "open": 64200.0, "high": 64250.0, "low": 64180.0, "close": 64206.0 },
+        "metrics": { "delta": 10.5, "cvd": 10.5, "total_vol": 120.0, "poc": 64203.78 },
+        "price_levels": []
+      }
+    ],
+    "provider": "binance",
+    "market": "global",
+    "asset_class": "crypto"
+  },
+  "leverage_simulation": {
+    "symbol": "BTCUSDT",
+    "entry_price": 60000.0,
+    "leverage": 10.0,
+    "position_size": 0.5,
+    "direction": "long",
+    "initial_margin": 3000.0,
+    "maintenance_margin": 120.0,
+    "liquidation_price": 54240.0
+  }
+}

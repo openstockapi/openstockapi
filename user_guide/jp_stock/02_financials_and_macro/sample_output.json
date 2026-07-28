@@ -1,0 +1,168 @@
+{
+  "use_case": "01_jp_market_data",
+  "generated_at": "2026-07-25",
+  "jp_symbols": [
+    "7203",
+    "6758",
+    "9984",
+    "9983",
+    "8035"
+  ],
+  "jp_ohlcv": [
+    {
+      "symbol": "7203",
+      "timestamp": "2026-07-21 09:00:00",
+      "open": 2800.5,
+      "high": 2850.0,
+      "low": 2795.0,
+      "close": 2820.0,
+      "volume": 3200000.0,
+      "provider": "yahoo",
+      "market": "jp",
+      "asset_class": "stock"
+    }
+  ],
+  "jp_profile": {
+    "symbol": "7203",
+    "company_name": "Toyota Motor Corporation",
+    "industry": "Auto Manufacturers",
+    "website": "https://global.toyota",
+    "headcount": 375000,
+    "description": "Toyota Motor Corporation designs, manufactures, assembles, and sells passenger vehicles...",
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  },
+  "jp_financials": {
+    "symbol": "7203",
+    "period_type": "annual",
+    "available_periods": ["2026-03-31"],
+    "periods": [
+      {
+        "period": "2026-03-31",
+        "financials": {
+          "balance_sheet": {
+            "total_assets": 105522331000000.0,
+            "total_liabilities": 64502263000000.0
+          },
+          "income_statement": {
+            "revenue": 45095324000000.0,
+            "net_income": 4944985000000.0
+          }
+        }
+      }
+    ],
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  },
+  "jp_balance_sheet": [
+    {
+      "symbol": "7203",
+      "year": 2026,
+      "quarter": null,
+      "statement_type": "balance",
+      "items": {
+        "total_assets": 105522331000000.0,
+        "total_liabilities": 64502263000000.0
+      },
+      "provider": "yahoo",
+      "market": "jp",
+      "asset_class": "stock"
+    }
+  ],
+  "jp_income_statement": [
+    {
+      "symbol": "7203",
+      "year": 2026,
+      "quarter": null,
+      "statement_type": "income",
+      "items": {
+        "revenue": 45095324000000.0,
+        "net_income": 4944985000000.0
+      },
+      "provider": "yahoo",
+      "market": "jp",
+      "asset_class": "stock"
+    }
+  ],
+  "jp_cashflow": [
+    {
+      "symbol": "7203",
+      "year": 2026,
+      "quarter": null,
+      "statement_type": "cashflow",
+      "items": {
+        "operating_cash_flow": 5500000000000.0
+      },
+      "provider": "yahoo",
+      "market": "jp",
+      "asset_class": "stock"
+    }
+  ],
+  "jp_ratios": {
+    "symbol": "7203",
+    "ratios": {
+      "pe_trailing": 9.81,
+      "pe_forward": 8.93,
+      "pb": 0.94,
+      "roe": 10.23,
+      "roa": 2.36,
+      "debt_to_equity": 107.06
+    },
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  },
+  "jp_dividends": {
+    "symbol": "7203",
+    "dividends": [
+      {
+        "ex_date": "2025-03-27",
+        "pay_date": null,
+        "amount": 45.0,
+        "type": "Dividend"
+      }
+    ],
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  },
+  "jp_splits": {
+    "symbol": "7203",
+    "splits": [
+      {
+        "date": "2021-09-28",
+        "ratio": 5.0
+      }
+    ],
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  },
+  "jp_calendar": {
+    "symbol": "7203",
+    "calendar": {
+      "Earnings Date": ["2026-05-08"]
+    },
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  },
+  "jp_news": {
+    "symbol": "7203",
+    "news": [
+      {
+        "id": "12345",
+        "title": "Toyota announces solid global production results",
+        "url": "https://finance.yahoo.com/news/...",
+        "published_at": 1784795096,
+        "publisher": "Yahoo Finance",
+        "summary": "Toyota Motor Corp today released consolidated production figures..."
+      }
+    ],
+    "provider": "yahoo",
+    "market": "jp",
+    "asset_class": "stock"
+  }
+}

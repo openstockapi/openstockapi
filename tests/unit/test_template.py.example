@@ -1,0 +1,103 @@
+"""
+Unit Test Template Example
+==========================
+This is a reference template showing contributors how to write unit tests for
+a new data provider. It demonstrates how to mock the project's internal HTTP client
+to test parsing logic and error handling offline.
+
+To write your own test, copy this file to: tests/unit/test_<provider_name>.py
+and adapt it to your provider's response structure.
+"""
+
+import pytest
+from unittest.mock import patch, MagicMock
+from datetime import datetime
+
+# Import the provider to test (replace with your provider)
+from openstockapi.providers.vn_stock.providers.kbs import KBSProvider
+from openstockapi.core.exceptions import DataParseError
+from openstockapi.core.models import OHLCVBar
+from openstockapi.license.session import Session, set_current_session
+
+# Setup a free license session before running tests to bypass API gate checks
+@pytest.fixture(autouse=True)
+def setup_free_session():
+    set_current_session(Session("free"))
+
+
+# ── Mock Data Definitions ─────────────────────────────────────────────────────
+
+# Mock raw JSON response from the upstream API endpoint
+MOCK_API_RESPONSE = {
+    "data_day": [
+        {"t": "2024-01-02", "o": "25000", "h": "26000", "l": "24500", "c": "25800", "v": "1500000"},
+        {"t": "2024-01-03", "o": "25800", "h": "25900", "l": "25000", "c": "25200", "v": "980000"}
+    ]
+}
+
+MOCK_API_ERROR_RESPONSE = {
+    "error": "Symbol not found",
+    "status": "failed"
+}
+
+
+# ── Happy Path Test Cases ──────────────────────────────────────────────────────
+
+def test_get_ohlcv_success():
+    """
+    Test that get_ohlcv successfully sends an HTTP GET request,
+    correctly parses the response, and returns standard OHLCVBar models.
+    """
+    provider = KBSProvider()
+    
+    # Mock the HTTP client request method
+    mock_response = MagicMock()
+    mock_response.json.return_value = MOCK_API_RESPONSE
+    mock_response.status_code = 200
+
+    # Patch the global http_client.request method
+    with patch("openstockapi.core.http_client.http_client.request", return_value=mock_response) as mock_request:
+        result = provider.get_ohlcv(symbol="HPG", resolution="1D", from_date="2024-01-01", to_date="2024-01-10")
+        
+        # 1. Assert request parameters (headers, query parameters, URL)
+        mock_request.assert_called_once()
+        args, kwargs = mock_request.call_args
+        assert args[0] == "GET"
+        assert "kbbuddywts" in args[1]  # Verify the URL has correct API endpoint domain
+        
+        # 2. Assert parser outputs
+        assert isinstance(result, list)
+        assert len(result) == 2
+        
+        # Check first bar fields mapping
+        bar1 = result[0]
+        assert isinstance(bar1, OHLCVBar)
+        assert bar1.symbol == "HPG"
+        assert bar1.open == 25000.0
+        assert bar1.close == 25800.0
+        assert bar1.volume == 1500000.0
+        assert bar1.provider == "kbs"
+        assert isinstance(bar1.timestamp, datetime)
+        assert bar1.timestamp.strftime("%Y-%m-%d") == "2024-01-02"
+
+
+# ── Unhappy Path Test Cases ────────────────────────────────────────────────────
+
+def test_get_ohlcv_api_error():
+    """
+    Test that the provider raises a DataParseError exception when the upstream API
+    returns an error message or invalid data structure.
+    """
+    provider = KBSProvider()
+    
+    mock_response = MagicMock()
+    # Mocking json() to raise ValueError simulates invalid JSON payloads (like HTML gateway error pages)
+    mock_response.json.side_effect = ValueError("Invalid JSON response")
+    mock_response.status_code = 502
+
+    with patch("openstockapi.core.http_client.http_client.request", return_value=mock_response):
+        # The parser should catch downstream keys missing and raise DataParseError
+        with pytest.raises(DataParseError) as exc_info:
+            provider.get_ohlcv(symbol="INVALID", resolution="1D", from_date="2024-01-01", to_date="2024-01-10")
+        
+        assert "failed" in str(exc_info.value).lower() or "invalid" in str(exc_info.value).lower()

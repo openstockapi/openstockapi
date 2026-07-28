@@ -5,6 +5,8 @@ from openstockapi.core.models import OHLCVBar, FinancialItem, CompanyProfile, Re
 
 from openstockapi.core.models_trading import ForeignTradingEntry, PropTradingEntry, InsiderTradingEntry
 
+from openstockapi.core.models_news import CryptoNewsEntry, CryptoEventEntry, ForexNewsEntry, ForexEventEntry
+
 class BaseProvider(ABC):
     name: str = "base"
     required_tier: DataTier = DataTier.FREE
@@ -55,4 +57,25 @@ class BaseProvider(ABC):
 
     def get_intraday_ticks(self, symbol: str, limit: int = 100) -> List[Any]:
         raise NotImplementedError("This provider does not support intraday matching ticks")
+
+    def get_crypto_options_instruments(self, currency: str = "BTC", kind: str = "option", provider: Optional[str] = None) -> List[Any]:
+        raise NotImplementedError("This provider does not support crypto options instruments")
+
+    def get_crypto_options_chain(self, currency: str = "BTC", provider: Optional[str] = None) -> List[Any]:
+        raise NotImplementedError("This provider does not support crypto options chain")
+
+    def get_crypto_options_ticker(self, instrument_name: str, provider: Optional[str] = None) -> Any:
+        raise NotImplementedError("This provider does not support crypto options ticker")
+
+    def get_crypto_news(self, limit: int = 20) -> List[CryptoNewsEntry]:
+        raise NotImplementedError("This provider does not support crypto news")
+
+    def get_crypto_events(self) -> List[CryptoEventEntry]:
+        raise NotImplementedError("This provider does not support crypto events")
+
+    def get_forex_news(self, limit: int = 20) -> List[ForexNewsEntry]:
+        raise NotImplementedError("This provider does not support forex news")
+
+    def get_forex_events(self) -> List[ForexEventEntry]:
+        raise NotImplementedError("This provider does not support forex events")
 

@@ -44,4 +44,8 @@ venv.bak/
 docs/
 uat/
 
+# Environment files
+.env
+.env.local
+
 

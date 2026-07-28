@@ -12,6 +12,8 @@ class ForeignTradingEntry(BaseModel):
     net_volume: float
     net_value: float
     provider: str
+    market: str = "vn"
+    asset_class: str = "stock"
 
 class PropTradingEntry(BaseModel):
     symbol: str
@@ -23,6 +25,8 @@ class PropTradingEntry(BaseModel):
     net_volume: float
     net_value: float
     provider: str
+    market: str = "vn"
+    asset_class: str = "stock"
 
 class InsiderTradingEntry(BaseModel):
     symbol: str
@@ -37,3 +41,5 @@ class InsiderTradingEntry(BaseModel):
     end_date: Optional[datetime] = None
     post_volume: float
     provider: str
+    market: str = "vn"
+    asset_class: str = "stock"

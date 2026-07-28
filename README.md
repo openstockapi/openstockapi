@@ -56,10 +56,10 @@ It is designed to be the upstream data acquisition layer for financial applicati
 <a id="features"></a>
 ## Features
 
-- ** Multi-market Support** — Covers Vietnamese (`VN`) equities and can be extended to International (`US`) markets with the same API.
-- ** Automatic Multi-source Fallback** — Integrates providers (KBS, VCI, MSN, MAS, Maybank, Fmarket) with transparent automatic failover when any source is unavailable.
-- ** Freemium Tier Access Control** — Supports `Free`, `Pro` (200 req/min), and `Premium` (500 req/min) tiers with a client-side Token Bucket Rate Limiter.
-- ** Async Support** — First-class `async/await` support via `async_ohlcv()` for high-throughput data pipelines.
+- ** Multi-market & Multi-asset Support** — Covers Vietnamese (`VN`) equities, Cryptocurrencies (`Crypto`), and Forex & Commodities.
+- ** Automatic Multi-source Fallback** — Integrates providers (KBS, VCI, MSN, MAS, Maybank, Fmarket, Core Engine) with transparent automatic failover when any source is unavailable.
+- ** JWT Handshake & Freemium Tier Access Control** — Supports short-lived JWT session token verification and `Free`, `Pro`, and `Premium` tier rate limits via a client-side Token Bucket Limiter.
+- ** Async Support** — First-class `async/await` support via `async_ohlcv()` and `async_crypto_ohlcv()` for high-throughput data pipelines.
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
 
@@ -79,16 +79,14 @@ osapi.init("free_YOUR_KEY")   # or "pro_YOUR_KEY" / "premium_YOUR_KEY"
 df = osapi.ohlcv("VNM", resolution="1D", start="2025-01-01", end="2025-12-31")
 print(df.head())
 
-# Company financial statements
-bs = osapi.balance_sheet("VNM", period="annual")
+# Fetch Cryptocurrency data
+btc_ohlcv = osapi.crypto_ohlcv("BTCUSDT", interval="1h", limit=5)
+print(btc_ohlcv)
 
-# Realtime market quote
-quote = osapi.quote("HPG")
-print(f"{quote.symbol}: {quote.price:,.0f} VND ({quote.pct_change:+.2f}%)")
-
-# Corporate news & events
-news   = osapi.company_news("FPT", limit=5)
-events = osapi.company_events("FPT", limit=5)
+# Fetch Forex & Commodities data
+rates = osapi.forex_rates(base="USD")
+gold_price = osapi.commodities_prices(symbol="GOLD", range_val="5d", interval="1h")
+print(f"USD/VND: {rates['rates']['VND']} | Gold: {gold_price['regularMarketPrice']} USD")
 ```
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
@@ -121,15 +119,17 @@ Full documentation, use case examples, and sample outputs are available in the U
 
  **[User Guide — Getting Started](./user_guide/getting_started.md)**
 
-| Module | Description | Guide |
-|--------|-------------|-------|
-| 01 — OHLCV & Profile | Historical price data, company profile | [](./user_guide/01_stock_market_data.md) |
-| 02 — Financial Statements | Balance sheet, income, cash flow, ratios | [](./user_guide/02_financial_statements.md) |
-| 03 — Realtime Quote | Live price, order book depth | [](./user_guide/03_realtime_quote.md) |
-| 04 — Market Indices | VNINDEX, VN30 constituents | [](./user_guide/04_order_book.md) |
-| 05 — Macro Indicators | CPI, M2 money supply, credit growth | [](./user_guide/05_macro_indicators.md) |
-| 06 — Mutual Funds | Fund NAV, portfolio holdings | [](./user_guide/06_mutual_funds.md) |
-| 07 — News & Events | Corporate news, dividends, events | [](./user_guide/07_news_and_events.md) |
+| Category | Module / Guide | Description |
+|----------|----------------|-------------|
+| **Vietnamese Stock** | [01 — Stock Market Data](./user_guide/vn_stock/01_stock_market_data.md) | Historical OHLCV, company profile, realtime quotes |
+| **Cryptocurrency** | [08 — Crypto Market Data](./user_guide/crypto/01_crypto_market_data.md) | Crypto OHLCV, depth, derivatives, delta footprint, leverage simulation |
+| **Forex & Commodities** | [09 — Forex Market Data](./user_guide/forex/01_forex_market_data.md) | Exchange rates, Forex OHLCV, commodities (Gold/Crude Oil), global indices |
+| **Australian Stock** | [10 — Dữ Liệu Chứng Khoán Úc](./user_guide/asx/01_asx_market_data.md) | ASX symbols list, OHLCV, company profile, balance sheet, income statement, cashflow, ratios, dividends, announcements, news |
+| **US Stock** | [11 — US Stock Market Data](./user_guide/us_stock/01_us_market_data.md) | US Stock OHLCV, company profile, financials, balance sheet, income statement, cashflow, ratios, dividends, splits, calendar, news |
+| **Japanese Stock** | [12 — JP Stock Market Data](./user_guide/jp_stock/01_jp_market_data.md) | JP Stock symbols list, OHLCV, company profile, balance sheet, income statement, cashflow, ratios, dividends, splits, calendar, news |
+| **China Stock** | [13 — CN Stock Market Data](./user_guide/cn_stock/01_cn_market_data.md) | CN Stock symbols list, OHLCV, company profile, balance sheet, income statement, cashflow, ratios, dividends, splits, realtime quote, order book, ticks, heatmap |
+| **HK Stock** | [14 — HK Stock Market Data](./user_guide/hk_stock/01_hk_market_data.md) | HK Stock symbols list, OHLCV, company profile, balance sheet, income statement, cashflow, ratios, dividends, splits, calendar, news, heatmap |
+
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
 
@@ -138,19 +138,78 @@ Full documentation, use case examples, and sample outputs are available in the U
 <a id="providers"></a>
 ## Supported Providers
 
+Providers are grouped by market/asset class. Within each group, they are tried in priority order — if one fails, the next is used automatically.
+
+### Vietnamese Stock Market
 | Provider | Source | Tier | Data Types |
-|----------|--------|------|------------|
-| `kbs` | KB Securities Vietnam | Free | OHLCV, Profile, News, Events |
+|---|---|---|---|
+| `kbs` | KB Securities Vietnam | Free | OHLCV, Company Profile, News, Events |
 | `vci` | Vietcap Securities | Free | OHLCV, Profile, Financial Statements, Insider/Foreign/Prop Trading, Events |
 | `msn` | MSN Finance (Bing) | Free | OHLCV (VN & International) |
-| `mas` | MAS (Mass Asset Securities) | Free | Financial Statements, Ratios |
-| `mbk` | Maybank Securities Vietnam | Free | Macro Indicators (M2, Credit) |
-| `fmarket` | Fmarket Vietnam | Free | Mutual Fund NAV & Holdings |
-| `tcbs` | TCBS (Techcom Securities) | Free | Realtime Quote, Order Book |
+| `mas` | MAS (Mass Asset Securities) | Free | Financial Statements, Financial Ratios |
+| `mbk` | Maybank Securities Vietnam | Free | Macro Indicators (M2, Credit Growth) |
+| `fmarket` | Fmarket Vietnam | Free | Mutual Fund NAV & Portfolio Holdings |
+| `tcbs` | TCBS (Techcom Securities) | Free | Realtime Quote, Order Book Depth |
 
-> Providers are tried in priority order per data type. If one fails, the next is used automatically.
+### Cryptocurrency
+
+Crypto data is sourced through the **OpenStockAPI Core Engine** — a managed, closed-source aggregation layer with automatic multi-provider failover and normalization. The specific upstream exchanges and data sources are not disclosed.
+
+| Capability | Tier |
+|---|---|
+| Crypto OHLCV (historical klines) | Free |
+| Crypto OHLCV (async) | Free |
+| Order Book Depth | Pro |
+| Derivatives Indicators (OI, Funding Rate) | Pro |
+| Delta Footprint Heatmap | Premium |
+| Leverage & Margin Simulation | Pro |
+| Supported Symbols List | Free |
+| Realtime Tickers | Pro |
+| Options Instruments List | Pro |
+| Options Chain (Strikes, IV, Bid/Ask) | Pro |
+| Options Ticker & Greeks | Pro |
+| Crypto Market Heatmap | Free |
+
+### Forex & Commodities
+
+Forex and Commodities data is sourced through the **OpenStockAPI Core Engine** with automatic fallback across multiple rate and price providers. Specific upstream sources are not disclosed.
+
+| Forex Spot Rates | Free |
+| Forex OHLCV | Free |
+| Commodities Prices (Gold, Oil, etc.) | Free |
+| Global Indices & ETF (SPY, QQQ) | Free |
+| Cross-broker Rate Comparison | Pro |
+| Supported Forex Symbols List | Free |
+| Forex & Financial News | Free |
+| Global Macro Events Calendar | Free |
+
+### Australian Stock Market
+| Provider | Source | Tier | Data Types |
+|---|---|---|---|
+| `core` | Core Engine | Free | Symbols, OHLCV, Profile, Financials, Dividends, Announcements, News |
+
+### US Stock Market
+| Provider | Source | Tier | Data Types |
+|---|---|---|---|
+| `core` | Core Engine | Free | OHLCV, Profile, Financials, Dividends, Splits, Calendar, News |
+
+### Japanese Stock Market
+| Provider | Source | Tier | Data Types |
+|---|---|---|---|
+| `core` | Core Engine | Free | Symbols, OHLCV, Profile, Financials (Balance Sheet, Income Statement, Cashflow, Ratios), Dividends, Splits, Calendar, News |
+
+### China Stock Market
+| Provider | Source | Tier | Data Types |
+|---|---|---|---|
+| `core` | Core Engine | Free / Pro | Symbols, OHLCV, Profile, Financials (Balance Sheet, Income Statement, Cashflow, Ratios), Dividends, Splits (Free); Realtime Quote, Order Book, Ticks (Pro) |
+
+### HK Stock Market
+| Provider | Source | Tier | Data Types |
+|---|---|---|---|
+| `core` | Core Engine | Free | Symbols, OHLCV, Profile, Financials (Balance Sheet, Income Statement, Cashflow, Ratios), Dividends, Splits, Calendar, News |
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
+
 
 ---
 
@@ -159,21 +218,118 @@ Full documentation, use case examples, and sample outputs are available in the U
 
 ```
 openstockapi
-├── ohlcv()                  # Historical OHLCV (sync)
-├── async_ohlcv()            # Historical OHLCV (async)
-├── profile()                # Company profile
-├── balance_sheet()          # Balance sheet
-├── income_statement()       # Income statement
-├── cashflow()               # Cash flow statement
-├── ratios()                 # Financial ratios (PE, PB, ROE...)
-├── quote()                  # Realtime price quote
-├── order_book()             # Order book depth
-├── market_index()           # Market index OHLCV
-├── index_constituents()     # Index member list
+├── ohlcv()                  # Historical Stock OHLCV (sync)
+├── async_ohlcv()            # Historical Stock OHLCV (async)
+├── profile()                # Stock Company profile
+├── derivative_profile()     # Stock Derivatives (Futures/Warrants) profile
+├── balance_sheet()          # Stock Balance sheet
+├── income_statement()       # Stock Income statement
+├── cashflow()               # Stock Cash flow statement
+├── ratios()                 # Stock Financial ratios
+├── quote()                  # Stock Realtime price quote
+├── order_book()             # Stock Order book depth
+├── market_index()           # Stock Market index OHLCV
 ├── macro_indicators()       # Macroeconomic data
-├── fund_details()           # Mutual fund info
-├── company_news()           # Corporate news
-└── company_events()         # Corporate events (dividends, ESOP...)
+├── fund_details()           # Stock Mutual fund info
+├── company_news()           # Stock Corporate news (supports routing to Crypto/Forex via market param)
+├── company_events()         # Stock Corporate events (supports routing to Crypto/Forex via market param)
+├── vn_heatmap()             # VN Stock Market Heatmap data & logos
+│
+├── crypto_ohlcv()           # Historical Crypto OHLCV (sync)
+├── async_crypto_ohlcv()     # Historical Crypto OHLCV (async)
+├── crypto_depth()           # Crypto Order book depth
+├── crypto_derivatives()     # Crypto Derivatives indicators
+├── crypto_footprint()       # Crypto Delta footprint heatmap
+├── simulate_leverage()      # Crypto Margin/leverage position simulator
+├── crypto_symbols()         # Supported Crypto symbols list
+├── crypto_tickers()         # Realtime Crypto tickers list
+├── crypto_options_instruments() # Supported Crypto Options list
+├── crypto_options_chain()   # Crypto Options chain data
+├── crypto_options_ticker()  # Crypto Options detailed Greeks
+├── crypto_news()            # Crypto News articles
+├── crypto_events()          # Crypto Calendar events
+├── crypto_profile()         # Crypto Token profile & logo
+├── crypto_heatmap()         # Cryptocurrency market Heatmap
+├── CryptoStream             # Realtime WebSocket streaming client
+│
+├── forex_rates()            # Forex Exchange rates
+├── forex_ohlcv()            # Historical Forex OHLCV
+├── commodities_prices()     # Commodities Prices (Gold, Oil)
+├── global_indices_etf()     # Global indices and ETFs (SPY, QQQ)
+├── compare_rates()          # Forex cross-broker arbitrage rates comparison
+├── forex_symbols()          # Supported Forex symbols list
+├── forex_news()             # Forex & Financial News articles
+├── forex_events()           # Global Macro Events Calendar
+├── forex_profile()          # Forex Currency Pair profile & cdn flags
+│
+├── asx_symbols()            # Supported ASX symbols list
+├── asx_ohlcv()              # Historical ASX OHLCV
+├── asx_profile()            # ASX Company profile
+├── asx_balance_sheet()      # ASX Balance sheet
+├── asx_income_statement()   # ASX Income statement
+├── asx_cashflow()           # ASX Cash flow statement
+├── asx_ratios()             # ASX Financial ratios
+├── asx_dividends()          # ASX Dividend history
+├── asx_announcements()      # ASX PDF announcements feed
+├── asx_news()               # ASX Company news
+├── asx_heatmap()            # ASX Market Heatmap data & logos
+│
+├── us_ohlcv()               # Historical US Stock OHLCV
+├── us_profile()             # US Stock Company profile
+├── us_financials()          # US Stock Financial statements
+├── us_balance_sheet()       # US Stock Balance sheet
+├── us_income_statement()    # US Stock Income statement
+├── us_cashflow()            # US Stock Cash flow statement
+├── us_ratios()              # US Stock Financial ratios
+├── us_dividends()           # US Stock Dividend history
+├── us_splits()              # US Stock Stock split history
+├── us_calendar()            # US Stock Corporate calendar
+├── us_news()                # US Stock Company news
+├── us_heatmap()             # US Stock Market Heatmap data & logos
+│
+├── jp_symbols()             # JP Stock symbols list
+├── jp_ohlcv()               # Historical JP Stock OHLCV
+├── jp_profile()             # JP Stock Company profile
+├── jp_financials()          # JP Stock Financial statements
+├── jp_balance_sheet()       # JP Stock Balance sheet
+├── jp_income_statement()    # JP Stock Income statement
+├── jp_cashflow()            # JP Stock Cash flow statement
+├── jp_ratios()              # JP Stock Financial ratios
+├── jp_dividends()           # JP Stock Dividend history
+├── jp_splits()              # JP Stock Stock split history
+├── jp_calendar()            # JP Stock Corporate calendar
+├── jp_news()                # JP Stock Company news
+├── jp_heatmap()             # JP Stock Market Heatmap data & logos
+│
+├── cn_symbols()             # CN Stock symbols list
+├── cn_ohlcv()               # Historical CN Stock OHLCV
+├── cn_profile()             # CN Stock Company profile
+├── cn_financials()          # CN Stock Financial statements
+├── cn_balance_sheet()       # CN Stock Balance sheet
+├── cn_income_statement()    # CN Stock Income statement
+├── cn_cashflow()            # CN Stock Cash flow statement
+├── cn_ratios()              # CN Stock Financial ratios
+├── cn_dividends()           # CN Stock Dividend history
+├── cn_splits()              # CN Stock Stock split history
+├── cn_quote()               # CN Stock Realtime price quote (Pro)
+├── cn_order_book()          # CN Stock Order book depth (Pro)
+├── cn_tick()                # CN Stock Intraday ticks (Pro)
+├── cn_heatmap()             # CN Stock Market Heatmap data & logos
+│
+├── hk_symbols()             # HK Stock symbols list
+├── hk_ohlcv()               # Historical HK Stock OHLCV
+├── hk_profile()             # HK Stock Company profile
+├── hk_financials()          # HK Stock Financial statements
+├── hk_balance_sheet()       # HK Stock Balance sheet
+├── hk_income_statement()    # HK Stock Income statement
+├── hk_cashflow()            # HK Stock Cash flow statement
+├── hk_ratios()              # HK Stock Financial ratios
+├── hk_dividends()           # HK Stock Dividend history
+├── hk_splits()              # HK Stock Stock split history
+├── hk_calendar()            # HK Stock Corporate calendar
+├── hk_heatmap()             # HK Stock Market Heatmap data & logos
+└── hk_news()                # HK Stock Company news
+
 ```
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
@@ -188,9 +344,11 @@ openstockapi
 - [x] Macroeconomic indicators (World Bank, Maybank)
 - [x] Mutual fund data (Fmarket)
 - [x] Corporate news & events (KBS, VCI)
-- [ ] International equity OHLCV
-- [ ] Cryptocurrency data
-- [ ] Derivatives / Futures data
+- [x] Cryptocurrency data (Core Engine)
+- [x] Crypto Options data (Deribit, OKX)
+- [x] Forex & Commodities data (Core Engine)
+- [x] Australian equity market data (ASX)
+- [x] US equity market data (US)
 - [ ] WebSocket streaming quotes
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
@@ -200,12 +358,17 @@ openstockapi
 <a id="contributing"></a>
 ## Contributing
 
-Contributions are welcome! If you'd like to add a new provider, fix a bug, or improve documentation:
+Contributions are welcome! If you'd like to add a new data provider, please use our **Connector Development Kit (CDK)** which automates boilerplate code generation and validation.
 
+For a step-by-step guide on how to add a provider using CDK, please refer to the **[CDK Contributor Guide](./CONTRIBUTING.md)**.
+
+General workflow:
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature/new-provider`
-3. Commit your changes
-4. Open a Pull Request
+3. Generate provider template: `openstock-cdk generate --name <name> --market <market> --type <type>`
+4. Implement your API parser logic and write tests
+5. Run tests: `pytest tests/cdk/ -v`
+6. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top ↑</a>)</p>
 

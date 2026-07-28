@@ -10,3 +10,5 @@ class MacroIndicatorEntry(BaseModel):
     unit: str
     source: Optional[str] = None
     provider: str
+    market: str = "vn"
+    asset_class: str = "stock"

@@ -1,0 +1,130 @@
+{
+  "use_case": "01_asx_market_data",
+  "generated_at": "2026-07-24",
+  "asx_symbols": [
+    "BHP",
+    "CBA",
+    "CSL",
+    "NAB",
+    "WBC"
+  ],
+  "asx_ohlcv": [
+    {
+      "time": 1735689600,
+      "open": 42.5,
+      "high": 43.1,
+      "low": 42.4,
+      "close": 43.0,
+      "volume": 2500000
+    }
+  ],
+  "asx_profile": {
+    "symbol": "BHP",
+    "company_name": "BHP Group Limited",
+    "exchange": "ASX",
+    "industry": "Other Industrial Metals & Mining",
+    "description": "BHP Group Limited operates as a resources company in Australia, Europe, China, Japan, India, North America, and internationally...",
+    "provider": "yahoo"
+  },
+  "asx_balance_sheet": [
+    {
+      "symbol": "BHP",
+      "year": 2025,
+      "quarter": 2,
+      "statement_type": "balance",
+      "items": {
+        "total_assets": 108790000000.0,
+        "current_assets": 22830000000.0,
+        "cash_and_equivalents": 11769000000.0,
+        "total_liabilities": 56572000000.0,
+        "total_equity": 52218000000.0
+      },
+      "provider": "yahoo",
+      "market": "au",
+      "asset_class": "stock"
+    }
+  ],
+  "asx_income_statement": [
+    {
+      "symbol": "BHP",
+      "year": 2025,
+      "quarter": 2,
+      "statement_type": "income",
+      "items": {
+        "total_revenue": 55700000000.0,
+        "gross_profit": 42100000000.0,
+        "net_income": 12900000000.0
+      },
+      "provider": "yahoo",
+      "market": "au",
+      "asset_class": "stock"
+    }
+  ],
+  "asx_cashflow": [
+    {
+      "symbol": "BHP",
+      "year": 2025,
+      "quarter": 2,
+      "statement_type": "cashflow",
+      "items": {
+        "operating_cash_flow": 18400000000.0,
+        "capital_expenditure": -9200000000.0,
+        "free_cash_flow": 9200000000.0
+      },
+      "provider": "yahoo",
+      "market": "au",
+      "asset_class": "stock"
+    }
+  ],
+  "asx_ratios": [
+    {
+      "symbol": "BHP",
+      "year": 2026,
+      "quarter": null,
+      "statement_type": "ratios",
+      "items": {
+        "pe_trailing": 20.43,
+        "peg_ratio": 1.25,
+        "dividend_yield": 0.054
+      },
+      "provider": "yahoo",
+      "market": "au",
+      "asset_class": "stock"
+    }
+  ],
+  "asx_dividends": {
+    "symbol": "BHP",
+    "dividends": [
+      {
+        "ex_date": "2025-09-04",
+        "pay_date": "2025-10-02",
+        "amount": 1.09,
+        "type": "Dividend",
+        "franking": 1.0
+      }
+    ],
+    "provider": "asx"
+  },
+  "asx_announcements": {
+    "symbol": "BHP",
+    "announcements": [
+      {
+        "date": "2026-07-20",
+        "title": "BHP Operational Review for the year ended 30 June 2026",
+        "url": "https://www.asx.com.au/asxpdf/20260720/pdf/example.pdf"
+      }
+    ],
+    "provider": "asx"
+  },
+  "asx_news": {
+    "symbol": "BHP",
+    "news": [
+      {
+        "title": "BHP Group Limited Q4 Production Report Analysis",
+        "publisher": "Core News",
+        "link": "https://finance.yahoo.com/news/bhp-report-example"
+      }
+    ],
+    "provider": "yahoo"
+  }
+}

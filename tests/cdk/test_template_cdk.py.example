@@ -1,0 +1,69 @@
+"""
+CDK Contract Test Template Example
+==================================
+This is a reference template showing contributors how to integrate their provider
+into the CDK automated testing suite. 
+
+By inheriting from `BaseCDKProviderTest`, this file automatically executes 
+all CDK quality contract test cases (CDK-001 to CDK-304) validating:
+  - Return formats (Pydantic Models)
+  - Numeric price and volume ranges (> 0)
+  - Time sorting integrity (ascending order)
+  - Object metadata validation (correct symbol and provider tags)
+
+To write your own contract test, copy this file to: tests/cdk/test_<provider_name>_cdk.py
+and adapt it to point to your provider class.
+"""
+
+from unittest.mock import patch
+import pytest
+
+# Import the base test class and mock fixtures
+from .base_test import BaseCDKProviderTest
+from .fixtures import cdk_mock_ohlcv, cdk_mock_financials, cdk_mock_profile
+
+# Import the provider to test (replace with your provider)
+from openstockapi.providers.vn_stock.providers.kbs import KBSProvider
+
+
+class TestTemplateProviderCDK(BaseCDKProviderTest):
+    """
+    CDK Contract Test Suite for the target provider.
+    Runs automated checks by mocking external outputs to keep tests offline-stable.
+    """
+    
+    # 1. Declare the provider class to test
+    PROVIDER_CLASS = KBSProvider
+    
+    # 2. Declare standard parameters used for validation tests
+    SAMPLE_SYMBOL = "HPG"
+    SAMPLE_MARKET = "VN"
+
+    # 3. Intercept and mock individual methods to verify outputs comply with CDK schemas.
+    #    (If your provider supports this action, mock it. If not, the test will be skipped).
+
+    def test_cdk_100_ohlcv_contract(self):
+        """Mock the get_ohlcv method to feed standard mock records into CDK validation."""
+        mock_data = cdk_mock_ohlcv()
+        for bar in mock_data:
+            bar.provider = self.PROVIDER_CLASS.name  # Ensure provider name matches
+
+        with patch.object(self.PROVIDER_CLASS, "get_ohlcv", return_value=mock_data):
+            super().test_cdk_100_ohlcv_contract()
+
+    def test_cdk_200_financial_contract(self):
+        """Mock the financial statement parser to check values are float/None only."""
+        mock_data = cdk_mock_financials()
+        for item in mock_data:
+            item.provider = self.PROVIDER_CLASS.name
+
+        with patch.object(self.PROVIDER_CLASS, "get_financial_statements", return_value=mock_data):
+            super().test_cdk_200_financial_contract()
+
+    def test_cdk_300_profile_contract(self):
+        """Mock the company profile parser to check output is not empty."""
+        mock_data = cdk_mock_profile()
+        mock_data.provider = self.PROVIDER_CLASS.name
+
+        with patch.object(self.PROVIDER_CLASS, "get_company_profile", return_value=mock_data):
+            super().test_cdk_300_profile_contract()

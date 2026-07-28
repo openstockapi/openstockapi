@@ -1,14 +1,18 @@
+import os
 from typing import Dict, List
+
+BACKEND_URL = os.getenv("OPENSTOCKAPI_BACKEND_URL", "https://api.openstockapi.com")
+OPENSTOCKAPI_REDIS_HOST = os.getenv("OPENSTOCKAPI_REDIS_HOST", "127.0.0.1")
+OPENSTOCKAPI_REDIS_PORT = int(os.getenv("OPENSTOCKAPI_REDIS_PORT", "6379"))
+OPENSTOCKAPI_REDIS_PASSWORD = os.getenv("OPENSTOCKAPI_REDIS_PASSWORD", "")
+OPENSTOCKAPI_REDIS_DB = int(os.getenv("OPENSTOCKAPI_REDIS_DB", "1"))
 
 DEFAULT_PROVIDER_PRIORITY: Dict[str, Dict[str, List[str]]] = {
     "VN": {
         "ohlcv": ["dnse", "kbs", "vci", "msn"],
         "financials": ["mas", "vci"],
-
         "profile": ["vndirect", "vci", "kbs"],
-
-
-
+        "derivative_profile": ["kbs"],
         "quote": ["dnse", "vci"],
         "orderbook": ["vci", "dnse"],
         "trading": ["vci"],
@@ -16,20 +20,111 @@ DEFAULT_PROVIDER_PRIORITY: Dict[str, Dict[str, List[str]]] = {
         "fund": ["fmarket"],
         "news": ["kbs"],
         "events": ["vci", "kbs"],
+        "heatmap": ["core"],
     },
-
-
-
     "US": {
-        "ohlcv": [],
-        "financials": [],
-        "profile": [],
-        "quote": [],
-        "orderbook": [],
-        "trading": [],
-        "macro": [],
-        "fund": [],
-        "news": [],
+        "ohlcv": ["core"],
+        "financials": ["core"],
+        "profile": ["core"],
+        "quote": ["core"],
+        "orderbook": ["core"],
+        "trading": ["core"],
+        "macro": ["core"],
+        "fund": ["core"],
+        "news": ["core"],
+        "events": ["core"],
+        "dividends": ["core"],
+        "splits": ["core"],
+        "calendar": ["core"],
+        "symbols": ["core"],
+        "heatmap": ["core"],
+    },
+    "JP": {
+        "ohlcv": ["core"],
+        "financials": ["core"],
+        "profile": ["core"],
+        "quote": ["core"],
+        "orderbook": ["core"],
+        "trading": ["core"],
+        "macro": ["core"],
+        "fund": ["core"],
+        "news": ["core"],
+        "events": ["core"],
+        "dividends": ["core"],
+        "splits": ["core"],
+        "calendar": ["core"],
+        "symbols": ["core"],
+        "heatmap": ["core"],
+    },
+    "CN": {
+        "ohlcv": ["core"],
+        "financials": ["core"],
+        "profile": ["core"],
+        "quote": ["core"],
+        "orderbook": ["core"],
+        "trading": ["core"],
+        "macro": ["core"],
+        "fund": ["core"],
+        "news": ["core"],
+        "events": ["core"],
+        "dividends": ["core"],
+        "splits": ["core"],
+        "calendar": ["core"],
+        "symbols": ["core"],
+        "ticks": ["core"],
+        "heatmap": ["core"],
+    },
+    "HK": {
+        "ohlcv": ["core"],
+        "financials": ["core"],
+        "profile": ["core"],
+        "quote": ["core"],
+        "orderbook": ["core"],
+        "trading": ["core"],
+        "macro": ["core"],
+        "fund": ["core"],
+        "news": ["core"],
+        "events": ["core"],
+        "dividends": ["core"],
+        "splits": ["core"],
+        "calendar": ["core"],
+        "symbols": ["core"],
+        "heatmap": ["core"],
+    },
+    "CRYPTO": {
+        "ohlcv": ["core"],
+        "depth": ["core"],
+        "derivatives": ["core"],
+        "footprint": ["core"],
+        "leverage": ["core"],
+        "symbols": ["core"],
+        "tickers": ["core"],
+        "options": ["core"],
+        "news": ["core"],
+        "events": ["core"],
+        "profile": ["core"],
+        "heatmap": ["core"],
+    },
+    "FOREX": {
+        "rates": ["core"],
+        "ohlcv": ["core"],
+        "commodities": ["core"],
+        "indices_etf": ["core"],
+        "compare": ["core"],
+        "symbols": ["core"],
+        "news": ["core"],
+        "events": ["core"],
+        "profile": ["core"],
+    },
+    "AU": {
+        "symbols": ["core"],
+        "ohlcv": ["core"],
+        "profile": ["core"],
+        "financials": ["core"],
+        "dividends": ["core"],
+        "announcements": ["core"],
+        "news": ["core"],
+        "heatmap": ["core"],
     }
 }
 

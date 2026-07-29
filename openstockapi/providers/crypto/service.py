@@ -49,11 +49,18 @@ class CryptoService:
         return self.binance_provider, "binance"
 
     async def get_symbols(self, provider: Optional[str] = None) -> List[str]:
-        # Return hardcoded symbol lists
-        return [
+        fallback = [
             "BTCUSDT", "ETHUSDT", "SOLUSDT", "ADAUSDT", "XRPUSDT",
             "DOGEUSDT", "BNBUSDT", "LTCUSDT", "LINKUSDT", "DOTUSDT"
         ]
+        try:
+            tickers = await self.binance_provider.get_tickers()
+            if tickers:
+                symbols = [t["symbol"] for t in tickers]
+                return sorted(symbols)
+        except Exception:
+            pass
+        return fallback
 
     async def get_tickers(self, provider: Optional[str] = None) -> List[Dict[str, Any]]:
         p, name = self._select_provider("", provider)

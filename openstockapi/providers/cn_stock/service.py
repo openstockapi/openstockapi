@@ -14,7 +14,20 @@ class CNStockService:
         self.tradingview_heatmap = TradingViewHeatmapProvider()
 
     async def get_symbols(self, provider: Optional[str] = None) -> List[str]:
-        return ["600519", "002594", "000001", "600036", "601318"]
+        fallback = ["600519", "002594", "000001", "600036", "601318"]
+        try:
+            heatmap = await self.tradingview_heatmap.get_heatmap(limit=10000)
+            if heatmap:
+                symbols = set()
+                for item in heatmap:
+                    sym = item.get("symbol")
+                    if sym:
+                        symbols.add(sym)
+                if symbols:
+                    return sorted(list(symbols))
+        except Exception:
+            pass
+        return fallback
 
     async def get_ohlcv(self, symbol: str, range_str: str = "5d", interval_str: str = "1h", provider: Optional[str] = None) -> Optional[Dict[str, Any]]:
         if provider:

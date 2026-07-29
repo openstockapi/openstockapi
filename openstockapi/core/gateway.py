@@ -191,11 +191,55 @@ class RequestGateway:
                 method_name = "get_forex_news"
             elif function == "events" and hasattr(provider, "get_forex_events"):
                 method_name = "get_forex_events"
+            elif hasattr(provider, f"get_{function}"):
+                method_name = f"get_{function}"
             else:
                 raise NotImplementedError(f"Provider '{provider.name}' does not implement '{function}' ({method_name}).")
 
         import inspect
         method = getattr(provider, method_name)
+        
+        # Translate from_date and resolution to range and interval for Yahoo/global stock providers
+        sig = inspect.signature(method)
+        if "range" in sig.parameters and "interval" in sig.parameters:
+            if "from_date" in params and "range" not in params:
+                from datetime import datetime
+                try:
+                    start_dt = datetime.strptime(params["from_date"], "%Y-%m-%d")
+                    days = (datetime.now() - start_dt).days
+                    if days <= 5:
+                        params["range"] = "5d"
+                    elif days <= 30:
+                        params["range"] = "1mo"
+                    elif days <= 90:
+                        params["range"] = "3mo"
+                    elif days <= 180:
+                        params["range"] = "6mo"
+                    elif days <= 365:
+                        params["range"] = "1y"
+                    elif days <= 365 * 2:
+                        params["range"] = "2y"
+                    elif days <= 365 * 5:
+                        params["range"] = "5y"
+                    elif days <= 365 * 10:
+                        params["range"] = "10y"
+                    else:
+                        params["range"] = "max"
+                except Exception:
+                    params["range"] = "max"
+            if "resolution" in params and "interval" not in params:
+                res = params["resolution"]
+                res_lower = res.lower() if res else ""
+                if res_lower in ("d", "1d"):
+                    params["interval"] = "1d"
+                elif res_lower in ("w", "1w"):
+                    params["interval"] = "1wk"
+                elif res_lower in ("m", "1m"):
+                    params["interval"] = "1mo"
+                else:
+                    params["interval"] = res
+
+        # Inspect signature again with updated params
         sig = inspect.signature(method)
         has_kwargs = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values())
         if has_kwargs:

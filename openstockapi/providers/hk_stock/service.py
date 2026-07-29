@@ -10,12 +10,22 @@ class HKStockService:
         self.tradingview_heatmap = TradingViewHeatmapProvider()
 
     async def get_symbols(self, provider: Optional[str] = None) -> List[str]:
-        if provider:
-            p_lower = provider.lower()
-            if "yahoo" in p_lower:
-                return ["0700", "9988", "3690", "9618", "1810"]
-            return []
-        return ["0700", "9988", "3690", "9618", "1810"]
+        fallback = ["0700", "9988", "3690", "9618", "1810"]
+        try:
+            heatmap = await self.tradingview_heatmap.get_heatmap(limit=10000)
+            if heatmap:
+                symbols = set()
+                for item in heatmap:
+                    sym = item.get("symbol")
+                    if sym:
+                        if sym.isdigit() and len(sym) < 4:
+                            sym = sym.zfill(4)
+                        symbols.add(sym)
+                if symbols:
+                    return sorted(list(symbols))
+        except Exception:
+            pass
+        return fallback
 
     async def get_ohlcv(self, symbol: str, range_str: str = "5d", interval_str: str = "1h", provider: Optional[str] = None) -> Optional[Dict[str, Any]]:
         if provider:

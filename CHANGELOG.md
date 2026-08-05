@@ -2,6 +2,14 @@
 
 All notable changes to the **OpenStockAPI** project will be documented in this file, adhering to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standard.
 
+## [v0.13.11] - 2026-08-06
+
+### Changed
+- Updated package description to reflect Global multi-market support (US, JP, CN, HK, ASX, Crypto, Forex, VN).
+- Released version `v0.13.11`.
+
+---
+
 ## [v0.13.4] - 2026-08-02
 
 ### Fixed

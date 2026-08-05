@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openstockapi"
-version = "0.13.10"
-description = "Vietnam stock market data library — open source data plane"
+version = "0.13.11"
+description = "Global stock & financial market data library — open source data plane"
 readme = "README.md"
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "OpenStockAPI Team", email = "contact@openstockapi.com" }
 ]
 license = { text = "AGPL-3.0-only" }
 requires-python = ">=3.10"

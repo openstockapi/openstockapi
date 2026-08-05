@@ -1,4 +1,4 @@
-__version__ = "0.13.10"
+__version__ = "0.13.11"
 
 # ── Core stock API (multi-market, routed via `market` param) ──────────────────
 from openstockapi.api.stock import ohlcv, profile, quote, async_ohlcv, derivative_profile, symbols, heatmap

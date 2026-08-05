@@ -13,16 +13,19 @@ USER_AGENTS = [
 class RobustHTTPClient:
     def __init__(self) -> None:
         self.client = httpx.Client(
-            timeout=httpx.Timeout(30.0, connect=10.0),
+            timeout=httpx.Timeout(2.0, connect=2.0),
             follow_redirects=True
         )
-        self.async_client = httpx.AsyncClient(
-            timeout=httpx.Timeout(30.0, connect=10.0),
+        self._async_client = None
+
+    def get_async_client(self) -> httpx.AsyncClient:
+        return httpx.AsyncClient(
+            timeout=httpx.Timeout(2.0, connect=2.0),
             follow_redirects=True
         )
 
 
-    def request(self, method: str, url: str, retries: int = 3, backoff_factor: float = 0.5, **kwargs: Any) -> httpx.Response:
+    def request(self, method: str, url: str, retries: int = 1, backoff_factor: float = 0.5, **kwargs: Any) -> httpx.Response:
         headers = kwargs.get("headers", {})
         if "User-Agent" not in headers:
             headers["User-Agent"] = random.choice(USER_AGENTS)
@@ -56,17 +59,17 @@ class RobustHTTPClient:
                     continue
         raise last_err or httpx.HTTPError("Request failed after retries")
 
-    async def async_request(self, method: str, url: str, retries: int = 3, backoff_factor: float = 0.5, **kwargs: Any) -> httpx.Response:
+    async def async_request(self, method: str, url: str, retries: int = 1, backoff_factor: float = 0.5, **kwargs: Any) -> httpx.Response:
         import asyncio
         headers = kwargs.get("headers", {})
         if "User-Agent" not in headers:
             headers["User-Agent"] = random.choice(USER_AGENTS)
         kwargs["headers"] = headers
 
-        last_err = None
         for attempt in range(retries):
             try:
-                response = await self.async_client.request(method, url, **kwargs)
+                async with self.get_async_client() as client:
+                    response = await client.request(method, url, **kwargs)
                 if response.status_code == 429:
                     try:
                         err_json = response.json()

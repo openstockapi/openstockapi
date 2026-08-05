@@ -24,7 +24,8 @@ class TradingViewHeatmapProvider:
                 "market_cap_basic",
                 "sector",
                 "industry",
-                "logoid"
+                "logoid",
+                "close"
             ],
             "sort": {
                 "sortBy": "market_cap_basic",
@@ -41,13 +42,15 @@ class TradingViewHeatmapProvider:
                     results = []
                     for item in data:
                         d = item.get("d", [])
-                        if len(d) >= 7:
+                        if len(d) >= 8:
                             logo_id = d[6]
                             logo_url = f"https://s3-symbol-logo.tradingview.com/{logo_id}.svg" if logo_id else None
                             results.append({
                                 "symbol": d[0],
                                 "name": d[1],
                                 "change": float(d[2]) if d[2] is not None else 0.0,
+                                "change_pct": float(d[2]) if d[2] is not None else 0.0,
+                                "price": float(d[7]) if d[7] is not None else 0.0,
                                 "market_cap": float(d[3]) if d[3] is not None else 0.0,
                                 "sector": d[4] or "Unknown",
                                 "industry": d[5] or "Unknown",

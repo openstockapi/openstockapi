@@ -113,7 +113,18 @@ class Session:
                     self.tier = DataTier.PREMIUM
                 else:
                     self.tier = DataTier.FREE
-            elif response.status_code in (401, 403):
+            elif response.status_code == 403:
+                import logging
+                err_detail = "Forbidden"
+                try:
+                    err_detail = response.json().get("detail", "Forbidden")
+                except Exception:
+                    pass
+                logging.getLogger("openstockapi.session").warning(
+                    f"Handshake failed (403): {err_detail}. Falling back to local tier check."
+                )
+                self._resolve_tier_fallback()
+            elif response.status_code == 401:
                 raise ApiKeyRequiredError()
             else:
                 self._resolve_tier_fallback()
@@ -126,7 +137,7 @@ class Session:
             self.tier = DataTier.COMMUNITY
         elif "pro_" in key or key == "pro":
             self.tier = DataTier.PRO
-        elif "premium_" in key or "prem_" in key or key == "premium":
+        elif "premium_" in key or "prem_" in key or key == "premium" or "openstock_key_" in key:
             self.tier = DataTier.PREMIUM
         else:
             self.tier = DataTier.FREE

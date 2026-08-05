@@ -49,7 +49,7 @@ class TradingViewHeatmapProvider:
         url = "https://scanner.tradingview.com/crypto/scan"
         payload = {
             "markets": ["crypto"],
-            "columns": ["name", "description", "change", "market_cap_calc", "logoid", "exchange"],
+            "columns": ["name", "description", "change", "market_cap_calc", "logoid", "exchange", "close"],
             "sort": {"sortBy": "market_cap_calc", "sortOrder": "desc"},
             "range": [0, fetch_limit]
         }
@@ -63,7 +63,7 @@ class TradingViewHeatmapProvider:
                     results = []
                     for item in data:
                         d = item.get("d", [])
-                        if len(d) >= 6:
+                        if len(d) >= 7:
                             symbol = d[0]
                             # Clean quote currency to find the base coin (e.g. BTCUSD -> BTC)
                             base = symbol
@@ -87,6 +87,8 @@ class TradingViewHeatmapProvider:
                                     "symbol": base,
                                     "name": d[1],
                                     "change": float(d[2]) if d[2] is not None else 0.0,
+                                    "change_pct": float(d[2]) if d[2] is not None else 0.0,
+                                    "price": float(d[6]) if d[6] is not None else 0.0,
                                     "market_cap": float(d[3]) if d[3] is not None else 0.0,
                                     "sector": "Cryptocurrency",
                                     "industry": "Digital Asset",

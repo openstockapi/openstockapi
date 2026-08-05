@@ -5,6 +5,7 @@ from openstockapi.providers.us_stock.providers.tradingview import TradingViewUSP
 from openstockapi.providers.us_stock.providers.nasdaq import NasdaqUSProvider
 from openstockapi.providers.us_stock.providers.google_news import GoogleNewsUSProvider
 from openstockapi.providers.us_stock.providers.tradingview_heatmap import TradingViewHeatmapProvider
+from openstockapi.providers.us_stock.providers.serpapi import SerpApiUSProvider
 
 class USStockService:
     def __init__(self):
@@ -14,6 +15,7 @@ class USStockService:
         self.nasdaq = NasdaqUSProvider()
         self.google_news = GoogleNewsUSProvider()
         self.tradingview_heatmap = TradingViewHeatmapProvider()
+        self.serpapi = SerpApiUSProvider()
 
     async def get_ohlcv(self, symbol: str, range_str: str = "5d", interval_str: str = "1h", provider: Optional[str] = None) -> Optional[Dict[str, Any]]:
         if provider:
@@ -28,10 +30,15 @@ class USStockService:
                 if res:
                     res["provider"] = "tradingview"
                 return res
+            elif "serpapi" in p_lower:
+                res = await self.serpapi.get_ohlcv(symbol, range_str, interval_str)
+                if res:
+                    res["provider"] = "serpapi"
+                return res
             return None
 
         # Fallback loop if no provider specified
-        for name, p in [("yahoo", self.yahoo), ("tradingview", self.tradingview)]:
+        for name, p in [("yahoo", self.yahoo), ("tradingview", self.tradingview), ("serpapi", self.serpapi)]:
             try:
                 res = await p.get_ohlcv(symbol, range_str, interval_str)
                 if res:
@@ -53,6 +60,16 @@ class USStockService:
                 res = await self.yahoo.get_profile(symbol)
                 if res:
                     res["provider"] = "yahoo"
+                return res
+            elif "serpapi" in p_lower:
+                res = await self.serpapi.get_quote(symbol)
+                if res:
+                    # Map minimal quote data to profile format
+                    return {
+                        "symbol": symbol.upper(),
+                        "company_name": symbol.upper(),
+                        "provider": "serpapi"
+                    }
                 return res
             return None
 
@@ -136,10 +153,13 @@ class USStockService:
             elif "yahoo" in p_lower:
                 res = await self.yahoo.get_news(symbol)
                 return {"news": res or [], "provider": "yahoo"}
+            elif "serpapi" in p_lower:
+                res = await self.serpapi.get_news(symbol)
+                return {"news": res or [], "provider": "serpapi"}
             return {"news": [], "provider": provider}
 
         # Fallback loop if no provider specified
-        for name, p in [("yahoo", self.yahoo), ("google_news", self.google_news)]:
+        for name, p in [("yahoo", self.yahoo), ("google_news", self.google_news), ("serpapi", self.serpapi)]:
             try:
                 res = await p.get_news(symbol)
                 if res:

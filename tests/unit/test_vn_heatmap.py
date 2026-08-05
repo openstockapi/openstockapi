@@ -38,7 +38,7 @@ def test_vn_heatmap_tradingview(monkeypatch):
     ]
     monkeypatch.setattr(vn_heatmap_service, "get_heatmap", mock_get)
 
-    res = vn_stock_api.vn_heatmap(limit=2)
+    res = vn_stock_api.heatmap(limit=2)
     if hasattr(res, "iloc"):
         assert res.iloc[0]["symbol"] == "VIC"
         assert res.iloc[0]["provider"] == "tradingview"
@@ -60,7 +60,7 @@ def test_vn_heatmap_kbs(monkeypatch):
     ]
     monkeypatch.setattr(vn_heatmap_service, "get_heatmap", mock_get)
 
-    res = vn_stock_api.vn_heatmap(limit=2, provider="kbs")
+    res = vn_stock_api.heatmap(limit=2, provider="kbs")
     if hasattr(res, "iloc"):
         assert res.iloc[0]["symbol"] == "VNM"
         assert res.iloc[0]["provider"] == "kbs"
@@ -90,7 +90,7 @@ def test_vn_heatmap_vci(monkeypatch):
     ]
     monkeypatch.setattr(vn_heatmap_service, "get_heatmap", mock_get)
 
-    res = vn_stock_api.vn_heatmap(limit=1, provider="vci")
+    res = vn_stock_api.heatmap(limit=1, provider="vci")
     if hasattr(res, "iloc"):
         assert res.iloc[0]["symbol"] == "ACB"
         assert res.iloc[0]["sector"] == "Financials"
@@ -109,7 +109,7 @@ def test_vn_heatmap_empty(monkeypatch):
     mock_get.return_value = []
     monkeypatch.setattr(vn_heatmap_service, "get_heatmap", mock_get)
 
-    res = vn_stock_api.vn_heatmap(limit=10)
+    res = vn_stock_api.heatmap(limit=10)
     if hasattr(res, "empty"):
         assert res.empty
     else:

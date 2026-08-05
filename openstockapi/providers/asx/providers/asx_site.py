@@ -9,7 +9,18 @@ class ASXSiteProvider:
         }
 
     async def get_symbols(self) -> List[str]:
-        # Fetch listed companies CSV directly from ASX
+        # Try TradingView first as it is more reliable and doesn't block Python requests
+        try:
+            from openstockapi.providers.asx.providers.tradingview_heatmap import TradingViewHeatmapProvider
+            tv = TradingViewHeatmapProvider()
+            heatmap = await tv.get_heatmap(limit=5000)
+            symbols = [item["symbol"] for item in heatmap if item.get("symbol")]
+            if symbols:
+                return symbols
+        except Exception:
+            pass
+
+        # Fallback to fetching listed companies CSV directly from ASX
         url = "https://www.asx.com.au/asx/research/ASXListedCompanies.csv"
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
@@ -26,6 +37,7 @@ class ASXSiteProvider:
                         return symbols
         except Exception:
             pass
+            
         return ["BHP", "CBA", "TLS", "CSL", "WBC", "NAB", "ANZ", "FMG", "MQG", "RIO"]
 
     async def get_profile(self, symbol: str) -> Optional[Dict[str, Any]]:

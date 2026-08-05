@@ -8,15 +8,17 @@ try:
 except ImportError:
     HAS_PANDAS = False
 
-def indicators(provider: Optional[str] = None) -> Union[List[dict], Any]:
+def indicators(market: Optional[str] = "VN", provider: Optional[str] = None) -> Union[List[dict], Any]:
     """Get macroeconomic indicators."""
     records = gateway.execute(
         action="stock.macro_indicators",
-        market="VN",
+        market=market or "VN",
         required_tier=DataTier.FREE,
         provider=provider
     )
     data_list = [rec.model_dump() for rec in records]
     if HAS_PANDAS:
-        return pd.DataFrame(data_list)
+        import numpy as np
+        df = pd.DataFrame(data_list)
+        return df.replace({np.nan: None})
     return data_list

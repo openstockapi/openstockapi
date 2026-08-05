@@ -133,7 +133,9 @@ def crypto_options_chain(currency: str = "BTC", provider: Optional[str] = None) 
     )
     data_list = [rec.model_dump() for rec in records]
     if HAS_PANDAS:
-        return pd.DataFrame(data_list)
+        import numpy as np
+        df = pd.DataFrame(data_list)
+        return df.replace({np.nan: None})
     return data_list
 
 def crypto_options_ticker(instrument_name: str, provider: Optional[str] = None) -> dict:
@@ -196,6 +198,8 @@ def crypto_heatmap(limit: int = 500, provider: Optional[str] = None) -> Any:
     )
     data_list = [item.model_dump() for item in items]
     if HAS_PANDAS:
-        return pd.DataFrame(data_list)
+        import numpy as np
+        df = pd.DataFrame(data_list)
+        return df.replace({np.nan: None})
     return data_list
 

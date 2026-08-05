@@ -65,6 +65,8 @@ class VCIHeatmapProvider:
                             "symbol": symbol,
                             "name": item.get("shortName") or item.get("name") or symbol,
                             "change": 0.0,          # Not available in batch from VCI IQ
+                            "change_pct": 0.0,
+                            "price": current_price,
                             "market_cap": None,     # Not available in batch from VCI IQ
                             "sector": sector,
                             "industry": industry,

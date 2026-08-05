@@ -61,7 +61,10 @@ async def async_ohlcv(symbol: str, resolution: str = "1D", start: Optional[str] 
         if not p_inst:
             continue
         try:
-            bars = await p_inst.async_get_ohlcv(symbol, resolution, start, end)
+            if p_name == "core":
+                bars = await p_inst.async_get_ohlcv(symbol, resolution, start, end, market=market)
+            else:
+                bars = await p_inst.async_get_ohlcv(symbol, resolution, start, end)
             for bar in bars:
                 bar.market = market_code
                 bar.asset_class = asset_class
@@ -123,21 +126,20 @@ def quote(symbol: str, provider: Optional[str] = None, market: str = "VN") -> Un
     )
     return q.model_dump()
 
-def vn_heatmap(limit: int = 500, provider: Optional[str] = None) -> Any:
-    """Get Vietnam stock market heatmap data.
+def symbols(provider: Optional[str] = None, market: str = "VN") -> List[str]:
+    """Get list of active stock symbols for a given market."""
+    return gateway.execute(
+        action="stock.symbols",
+        market=market,
+        required_tier=DataTier.FREE,
+        provider=provider
+    )
 
-    Returns symbol, name, change%, market_cap, sector, industry, logo_url for
-    HOSE/HNX/UPCOM listed equities.
-
-    Args:
-        limit: Maximum number of stocks to return (default 500).
-        provider: Data source — 'tradingview' (default, full data),
-                  'kbs' (change% only, no market_cap),
-                  'vci' (sector/industry/logo, no change%).
-    """
+def heatmap(limit: int = 500, provider: Optional[str] = None, market: str = "VN") -> Any:
+    """Get stock market heatmap data for a given market."""
     items = gateway.execute(
         action="stock.heatmap",
-        market="vn",
+        market=market,
         required_tier=DataTier.FREE,
         limit=limit,
         provider=provider

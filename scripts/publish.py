@@ -34,7 +34,8 @@ def main():
 
     # 4. Upload to PyPI
     print("\n[3/3] Uploading package to PyPI (python -m twine upload dist/*)...")
-    res = subprocess.run([sys.executable, "-m", "twine", "upload", "dist/*"])
+    pypirc_path = os.path.expanduser("~/.pypirc")
+    res = subprocess.run([sys.executable, "-m", "twine", "upload", "--skip-existing", "--config-file", pypirc_path, "dist/*"])
     if res.returncode != 0:
         print("[ERR] Upload failed!")
         sys.exit(1)

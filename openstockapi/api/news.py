@@ -33,8 +33,14 @@ def news(symbol: str, limit: int = 10, provider: Optional[str] = None, market: s
         provider=provider
     )
 
-    data_list = [item.model_dump() for item in items]
-    if HAS_PANDAS:
+    if hasattr(items, "model_dump"):
+        data_list = items.model_dump()
+    elif isinstance(items, list):
+        data_list = [item.model_dump() if hasattr(item, "model_dump") else item for item in items]
+    else:
+        data_list = items
+
+    if HAS_PANDAS and isinstance(data_list, list):
         return pd.DataFrame(data_list)
     return data_list
 
@@ -61,7 +67,13 @@ def events(symbol: str, limit: int = 10, provider: Optional[str] = None, market:
         provider=provider
     )
 
-    data_list = [item.model_dump() for item in items]
-    if HAS_PANDAS:
+    if hasattr(items, "model_dump"):
+        data_list = items.model_dump()
+    elif isinstance(items, list):
+        data_list = [item.model_dump() if hasattr(item, "model_dump") else item for item in items]
+    else:
+        data_list = items
+
+    if HAS_PANDAS and isinstance(data_list, list):
         return pd.DataFrame(data_list)
     return data_list

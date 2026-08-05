@@ -120,8 +120,8 @@ class RequestGateway:
             method_name = "get_forex_events"
         elif asset_class == "crypto" and function == "heatmap":
             method_name = "get_crypto_heatmap"
-        elif asset_class == "stock" and market.lower() == "au":
-            method_name = f"get_asx_{function}"
+        elif asset_class == "stock" and market.lower() in ("au", "asx"):
+            method_name = f"get_au_{function}"
         elif asset_class == "stock" and market.lower() == "us":
             method_name = f"get_us_{function}"
         elif asset_class == "stock" and market.lower() == "jp":
@@ -191,6 +191,14 @@ class RequestGateway:
                 method_name = "get_forex_news"
             elif function == "events" and hasattr(provider, "get_forex_events"):
                 method_name = "get_forex_events"
+            elif function == "company_news" and hasattr(provider, f"get_{market.lower()}_news"):
+                method_name = f"get_{market.lower()}_news"
+            elif function == "company_news" and market.lower() in ("au", "asx") and hasattr(provider, "get_au_news"):
+                method_name = "get_au_news"
+            elif function == "company_events" and hasattr(provider, f"get_{market.lower()}_events"):
+                method_name = f"get_{market.lower()}_events"
+            elif function == "company_events" and market.lower() in ("au", "asx") and hasattr(provider, "get_au_events"):
+                method_name = "get_au_events"
             elif hasattr(provider, f"get_{function}"):
                 method_name = f"get_{function}"
             else:

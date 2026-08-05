@@ -2,6 +2,12 @@ import pytest
 import httpx
 from unittest.mock import MagicMock, patch
 from openstockapi.license.session import Session, set_current_session
+from openstockapi.core.rate_limiter import rate_limiter
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    rate_limiter.buckets.clear()
+
 
 @pytest.fixture(autouse=True)
 def mock_license_validate():

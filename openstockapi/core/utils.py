@@ -3,8 +3,8 @@ from datetime import datetime
 from typing import Any
 
 def clean_symbol(symbol: str) -> str:
-    """Standardize ticker symbols to uppercase alphanumeric."""
-    return re.sub(r"[^A-Za-z0-9]", "", symbol).upper()
+    """Standardize ticker symbols to uppercase alphanumeric, preserving common prefixes/suffixes."""
+    return re.sub(r"[^A-Za-z0-9\^\-\./]", "", symbol).upper()
 
 def parse_market_symbol(symbol: str, default_market: str = "VN") -> tuple[str, str]:
     """
@@ -12,10 +12,12 @@ def parse_market_symbol(symbol: str, default_market: str = "VN") -> tuple[str, s
     Supports formats: 'AAPL.US', 'VNM.VN', or 'VNM' with market="VN".
     Returns tuple of (cleaned_symbol, market_code).
     """
+    valid_markets = {"VN", "US", "JP", "CN", "HK", "ASX", "AU"}
     if "." in symbol:
         parts = symbol.rsplit(".", 1)
-        if len(parts[1]) in (2, 3) and parts[1].isalpha():
-            return clean_symbol(parts[0]), parts[1].upper()
+        suffix = parts[1].upper()
+        if len(suffix) in (2, 3) and suffix.isalpha() and suffix in valid_markets:
+            return clean_symbol(parts[0]), suffix
     return clean_symbol(symbol), default_market.upper()
 
 

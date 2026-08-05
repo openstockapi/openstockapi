@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openstockapi"
-version = "0.10.3"
+version = "0.13.10"
 description = "Vietnam stock market data library — open source data plane"
 readme = "README.md"
 authors = [

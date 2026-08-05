@@ -2,6 +2,137 @@
 
 All notable changes to the **OpenStockAPI** project will be documented in this file, adhering to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standard.
 
+## [v0.13.4] - 2026-08-02
+
+### Fixed
+- Fixed `async_get_ohlcv` implementation in `CoreProvider` to correctly handle multi-market routing and delegation.
+- Fixed return type mapping in `CoreProvider.async_get_ohlcv` for Vietnam market where raw Pydantic models list was incorrectly processed as a dictionary.
+
+---
+
+## [v0.13.2] - 2026-08-02
+
+### Added
+- Added `"price"` and `"change_pct"` fields to Pydantic `HeatmapItem` schema definition to prevent Pydantic serialization from discarding these values.
+- Mapped `"change_pct"` to all TradingView, KBS, and VCI heatmap provider outputs.
+
+---
+
+## [v0.13.1] - 2026-08-02
+
+### Added
+- Added `"close"` column query and mapped `"price"` field to TradingView Heatmap results for all international markets (US, JP, CN, HK, ASX, Crypto) to align the payload structure with VN market.
+
+---
+
+## [v0.13.0] - 2026-08-02
+
+### Changed
+- Reordered Vietnam stock data provider priorities: moved `dnse` to the lowest priority for `ohlcv` and `quote` methods, promoting keyless providers like `kbs` and `vci` to default status.
+
+---
+
+## [v0.12.9] - 2026-08-02
+
+### Fixed
+- Restored backward-compatible market-specific prefix functions (e.g. `us_ohlcv`, `jp_symbols`, `asx_financials` etc.) to the package root `__init__.py` for all non-VN markets (US, JP, CN, HK, ASX) to maintain backward compatibility for existing integrations.
+- Kept Vietnam stock data unified under the default `symbols()` and `heatmap()` methods.
+
+---
+
+## [v0.12.8] - 2026-08-02
+
+### Fixed
+- Fixed `RuntimeError: Event loop is closed` error during concurrent multithreaded requests (e.g. under FastAPI/Uvicorn server environment) by wrapping dynamic async HTTP request clients in `async with` context managers to properly manage their lifecycle per thread.
+
+---
+
+## [v0.12.7] - 2026-08-02
+
+### Changed
+- Updated the Vietnam UAT script `run_uat_vietnam_stock.py` to call `heatmap()` instead of `vn_heatmap()` to align with the unified API.
+
+---
+
+## [v0.12.6] - 2026-08-02
+
+### Removed
+- Removed legacy, redundant `vn_symbols()` and `vn_heatmap()` functions from public API to strictly enforce a unified API design. All Vietnam stock data is now queried uniformly via `symbols(market="VN")` and `heatmap(market="VN")`.
+
+### Changed
+- Updated unit tests to match the removed functions and verify unified behavior.
+
+---
+
+## [v0.12.5] - 2026-08-02
+
+### Changed
+- Reverted package root `__init__.py` to use clean, unified structure. Exposed the unified `symbols()` function (supporting `market` parameters like `"US"`, `"ASX"`, `"VN"`, etc.) alongside `vn_symbols()`.
+
+---
+
+## [v0.12.4] - 2026-08-02
+
+### Fixed
+- Restored original backward-compatible `__init__.py` imports and exports structure, re-exposing all market-prefixed methods (like `us_symbols`, `asx_symbols`, `jp_symbols`, `cn_symbols`, `hk_symbols` and their respective endpoints) at the package root level.
+
+---
+
+## [v0.12.3] - 2026-08-02
+
+### Added
+- Added `vn_symbols()` public helper function to the client SDK to provide naming consistency with other market-specific functions (like `us_symbols()`, `jp_symbols()`, etc.).
+- Registered and exposed `vn_symbols` in public package entrypoint.
+
+---
+
+## [v0.12.2] - 2026-08-02
+
+### Added
+- Added support for S&P/ASX 200 Index (`^AXJO`) on Australian stock market.
+- Integrated ASX index symbol verification to `tests/unit/test_global_indices.py`.
+
+### Fixed
+- Fixed routing in `gateway.py` to correctly map both `"au"` and `"asx"` market codes to the concrete ASX provider.
+- Prevented appending `.AX` suffix to index symbols starting with `^` in Yahoo ASX provider.
+
+---
+
+## [v0.12.1] - 2026-08-02
+
+### Added
+- Supported query of global index symbols (e.g. S&P 500 `^GSPC`, Nikkei 225 `^N225`, Hang Seng Index `^HSI`, CSI 300 `000300.SS`).
+- Added robust suffix verification in `parse_market_symbol` to prevent treating stock suffixes (like `.SS` or `.SZ` in China) as market codes if they do not match valid market codes.
+- Added unit tests for global stock indices in `tests/unit/test_global_indices.py`.
+
+### Fixed
+- Fixed clean symbol logic to preserve index prefixes (`^`) and common punctuation characters (`-`, `.`, `/`).
+- Prevented appending `.T` or `.HK` suffixes to index symbols starting with `^` in JP and HK providers.
+
+---
+
+## [v0.12.0] - 2026-08-02
+
+### Added
+- Integrated symbols retrieval support for Vietnam (VN) stock market, returning listed companies from VCI (Vietcap IQ) and TradingView.
+- Integrated VN Indices (VNINDEX, VN30, HNX30, HNXINDEX, UPCOMINDEX) OHLCV retrieval support via VCI (Vietcap WTS) provider.
+- Added smart routing and normalization for VN index symbols to automatically handle case-sensitivity (e.g. mapping `HNX-INDEX` to `HNXIndex` and `UPCOM` to `HNXUpcomIndex`) and route to `vci`.
+- Added unit tests for Vietnam symbols retrieval in `tests/unit/test_vn_symbols.py`.
+- Integrated Vietnam symbols validation into UAT suite `uat/run_uat_vietnam_stock.py`.
+
+### Changed
+- Configured VCI as the default/priority provider for VN symbols retrieval (`symbols(market="VN")`).
+
+---
+
+## [v0.11.0] - 2026-08-01
+
+### Added
+- Integrated SerpApi (Google Finance API) as a provider for US Stock market data.
+- Added SerpApi implementation in `openstockapi/providers/us_stock/providers/serpapi.py`.
+- Added unit tests for SerpApi US provider in `tests/unit/test_us_stock_serpapi.py`.
+- Integrated SerpApi health check in `uat/run_uat_us_stock.py`.
+
 ---
 
 ## [v0.10.0] - 2026-07-25

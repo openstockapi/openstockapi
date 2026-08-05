@@ -16,10 +16,36 @@ Module này cung cấp dữ liệu về giá cổ phiếu lịch sử (OHLCV), h
 
 ## 1. Dữ liệu cổ phiếu và báo giá thời gian thực
 
+### Use Case 1.0 — Lấy danh sách mã chứng khoán (List Symbols)
+
+**Tier yêu cầu**: `Free`  
+**Provider hỗ trợ**: VCI (Mặc định) / TradingView (Heatmap) / KBS
+
+Hàm này trả về toàn bộ danh sách mã chứng khoán (cổ phiếu, chứng chỉ quỹ, chứng quyền, chỉ số) đang hoạt động trên thị trường Việt Nam.
+
+```python
+import openstockapi as osapi
+
+# Lấy danh sách mã chứng khoán mặc định (từ VCI)
+symbols = osapi.symbols(market="VN")
+print(f"Tổng số mã: {len(symbols)}")
+print(f"10 mã đầu tiên: {symbols[:10]}")
+
+# Lấy danh sách mã từ nguồn TradingView Heatmap
+tv_symbols = osapi.symbols(market="VN", provider="tradingview")
+print(f"Tổng số mã TradingView: {len(tv_symbols)}")
+```
+
+---
+
 ### Use Case 1.1 — Lấy dữ liệu giá lịch sử OHLCV (Đồng bộ)
 
 **Tier yêu cầu**: `Free`  
 **Provider hỗ trợ**: DNSE / KBS / VCI / MSN (Hỗ trợ Tự động chọn nguồn Auto-Switching)
+
+> [!NOTE]
+> **Hỗ trợ Chỉ số (VNINDEX, VN30, HNX30, HNXINDEX, UPCOMINDEX):** 
+> Gateway tự động chuẩn hóa và định tuyến các truy vấn chỉ số (ví dụ: `VNINDEX`, `VN30`, `HNX-INDEX`, `UPCOM-INDEX`) về nguồn **VCI** (Vietcap) để đảm bảo trả về dữ liệu chuẩn xác, kể cả khi bạn không chỉ định `provider` thủ công.
 
 ```python
 import openstockapi as osapi
@@ -33,9 +59,9 @@ data = osapi.ohlcv(
     provider="kbs"         # Tùy chọn nguồn thủ công: "dnse", "kbs", "vci", "msn" (Bỏ qua để dùng Auto-Switching)
 )
 
-print(data)
+# Lấy dữ liệu chỉ số VN-Index (Tự động chuyển thành VNINDEX và định tuyến về VCI)
+vnindex = osapi.ohlcv("VNINDEX", start="2025-01-01")
 ```
-
 **Kết quả trả về mẫu (danh sách `OHLCVBar`):**
 ```json
 [

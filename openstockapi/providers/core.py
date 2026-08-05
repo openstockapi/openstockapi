@@ -12,15 +12,15 @@ from openstockapi.providers.cn_stock.service import cn_stock_service
 from openstockapi.providers.hk_stock.service import hk_stock_service
 from openstockapi.providers.crypto.service import crypto_service
 from openstockapi.providers.forex.service import forex_service
-from openstockapi.providers.vn_stock.heatmap_service import vn_heatmap_service
+from openstockapi.providers.vn_stock.service import vn_stock_service
 
 from openstockapi.core.base_provider import BaseProvider
 from openstockapi.core.types import DataTier
 from openstockapi.core.http_client import http_client
 from openstockapi.core.exceptions import DataParseError
 from openstockapi.config.settings import BACKEND_URL
-from openstockapi.core.models import OHLCVBar, FinancialItem, OrderBook, OrderBookEntry, OptionsInstrument, OptionsChainEntry, OptionsTicker, CryptoProfile, ForexProfile, HeatmapItem
-from openstockapi.core.models_news import CryptoNewsEntry, CryptoEventEntry, ForexNewsEntry, ForexEventEntry
+from openstockapi.core.models import OHLCVBar, FinancialItem, OrderBook, OrderBookEntry, OptionsInstrument, OptionsChainEntry, OptionsTicker, CryptoProfile, ForexProfile, HeatmapItem, CompanyProfile, RealtimeQuote, NewsItem, FundItem, IntradayTick, DerivativeProfile
+from openstockapi.core.models_news import CryptoNewsEntry, CryptoEventEntry, ForexNewsEntry, ForexEventEntry, CompanyEventEntry
 from openstockapi.core.models_asx import ASXCompanyProfile, ASXFinancials, ASXDividendEntry, ASXDividends, ASXAnnouncementEntry, ASXAnnouncements, ASXNewsEntry, ASXNews
 from openstockapi.core.models_us import USCompanyProfile, USFinancials, USDividendEntry, USDividends, USSplitEntry, USSplits, USCalendar, USNewsEntry, USNews
 from openstockapi.core.models_jp import JPCompanyProfile, JPFinancials, JPDividendEntry, JPDividends, JPSplitEntry, JPSplits, JPCalendar, JPNewsEntry, JPNews, JPRatios
@@ -96,6 +96,82 @@ class CoreProvider(BaseProvider):
     def get_ohlcv(self, symbol: str, resolution: str, from_date: str, to_date: str) -> List[Any]:
         # For global stocks/US stocks fallback if implemented in backend later
         raise NotImplementedError("CoreProvider does not support standard get_ohlcv. Use specific crypto/forex methods instead.")
+
+    async def async_get_ohlcv(self, symbol: str, resolution: str, from_date: str, to_date: str, market: Optional[str] = None) -> List[OHLCVBar]:
+        if not market:
+            from openstockapi.core.utils import parse_market_symbol
+            _, market = parse_market_symbol(symbol, default_market="VN")
+        
+        market_lower = market.lower()
+        
+        # Translate resolution & from_date for non-VN markets
+        range_str = "max"
+        interval_str = "1d"
+        if market_lower != "vn":
+            res_lower = resolution.lower() if resolution else ""
+            if res_lower in ("d", "1d"):
+                interval_str = "1d"
+            elif res_lower in ("w", "1w"):
+                interval_str = "1wk"
+            elif res_lower in ("m", "1m"):
+                interval_str = "1mo"
+            else:
+                interval_str = resolution
+
+            if from_date:
+                from datetime import datetime
+                try:
+                    start_dt = datetime.strptime(from_date, "%Y-%m-%d")
+                    days = (datetime.now() - start_dt).days
+                    if days <= 5:
+                        range_str = "5d"
+                    elif days <= 30:
+                        range_str = "1mo"
+                    elif days <= 90:
+                        range_str = "3mo"
+                    elif days <= 180:
+                        range_str = "6mo"
+                    elif days <= 365:
+                        range_str = "1y"
+                    elif days <= 365 * 2:
+                        range_str = "2y"
+                    elif days <= 365 * 5:
+                        range_str = "5y"
+                    elif days <= 365 * 10:
+                        range_str = "10y"
+                    else:
+                        range_str = "max"
+                except Exception:
+                    range_str = "max"
+
+        try:
+            if market_lower == "vn":
+                res = await vn_stock_service.get_ohlcv(symbol, resolution, from_date, to_date)
+                return res if res else []
+            elif market_lower == "us":
+                res = await us_stock_service.get_ohlcv(symbol, range_str=range_str, interval_str=interval_str)
+            elif market_lower == "jp":
+                res = await jp_stock_service.get_ohlcv(symbol, range_str=range_str, interval_str=interval_str)
+            elif market_lower == "cn":
+                res = await cn_stock_service.get_ohlcv(symbol, range_str=range_str, interval_str=interval_str)
+            elif market_lower == "hk":
+                res = await hk_stock_service.get_ohlcv(symbol, range_str=range_str, interval_str=interval_str)
+            elif market_lower in ("au", "asx"):
+                res = await asx_service.get_ohlcv(symbol, range_str=range_str, interval_str=interval_str)
+            elif market_lower == "crypto":
+                res = await crypto_service.get_ohlcv(symbol, interval=interval_str, limit=100)
+            elif market_lower == "forex":
+                from openstockapi.providers.forex.normalizer import parse_forex_pair
+                base, target = parse_forex_pair(symbol)
+                res = await forex_service.get_ohlcv(symbol=symbol, base=base, target=target, range_str=range_str, interval_str=interval_str)
+            else:
+                raise NotImplementedError(f"Market '{market}' not supported for async OHLCV in CoreProvider")
+
+            if not res:
+                return []
+            return self._parse_core_ohlcv_response(res, symbol)
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse async {market.upper()} OHLCV: {e}")
 
     def get_financial_statements(self, symbol: str, stmt_type: str, period: str) -> List[Any]:
         raise NotImplementedError("CoreProvider does not support standard get_financial_statements.")
@@ -295,6 +371,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item["market_cap"],
                     sector=item["sector"],
                     industry=item["industry"],
@@ -517,13 +595,13 @@ class CoreProvider(BaseProvider):
 
     # --- ASX Endpoints ---
     # --- ASX Endpoints ---
-    def get_asx_symbols(self, provider: Optional[str] = None) -> List[str]:
+    def get_au_symbols(self, provider: Optional[str] = None) -> List[str]:
         try:
             return _run_async(asx_service.get_symbols(provider=provider))
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX Symbols from Core Engine: {e}")
 
-    def get_asx_ohlcv(self, symbol: str, range: str = "5d", interval: str = "1h", provider: Optional[str] = None) -> List[OHLCVBar]:
+    def get_au_ohlcv(self, symbol: str, range: str = "5d", interval: str = "1h", provider: Optional[str] = None) -> List[OHLCVBar]:
         try:
             res = _run_async(asx_service.get_ohlcv(symbol, range_str=range, interval_str=interval, provider=provider))
             if not res:
@@ -532,7 +610,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX OHLCV from Core Engine: {e}")
 
-    def get_asx_profile(self, symbol: str, provider: Optional[str] = None) -> ASXCompanyProfile:
+    def get_au_profile(self, symbol: str, provider: Optional[str] = None) -> ASXCompanyProfile:
         try:
             data = _run_async(asx_service.get_profile(symbol, provider=provider))
             if not data:
@@ -552,7 +630,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX Company Profile: {e}")
 
-    def get_asx_heatmap(self, limit: int = 500, provider: Optional[str] = None) -> List[HeatmapItem]:
+    def get_au_heatmap(self, limit: int = 500, provider: Optional[str] = None) -> List[HeatmapItem]:
         try:
             raw_data = _run_async(asx_service.get_heatmap(limit=limit, provider=provider))
             if not raw_data:
@@ -562,6 +640,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item["market_cap"],
                     sector=item["sector"],
                     industry=item["industry"],
@@ -577,7 +657,7 @@ class CoreProvider(BaseProvider):
 
     def get_vn_heatmap(self, limit: int = 500, provider: Optional[str] = None) -> List[HeatmapItem]:
         try:
-            raw_data = _run_async(vn_heatmap_service.get_heatmap(limit=limit, provider=provider))
+            raw_data = _run_async(vn_stock_service.get_heatmap(limit=limit, provider=provider))
             if not raw_data:
                 return []
             return [
@@ -585,6 +665,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item.get("market_cap"),
                     sector=item["sector"],
                     industry=item["industry"],
@@ -598,7 +680,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse VN Stock Heatmap: {e}")
 
-    def get_asx_financials(self, symbol: str, provider: Optional[str] = None) -> ASXFinancials:
+    def get_au_financials(self, symbol: str, provider: Optional[str] = None) -> ASXFinancials:
         try:
             data = _run_async(asx_service.get_financials(symbol, provider=provider))
             if not data:
@@ -613,7 +695,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX Financials: {e}")
 
-    def get_asx_income_statement(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
+    def get_au_income_statement(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
         backend_period = "quarterly" if period.upper().startswith("Q") else "annual"
         try:
             data = _run_async(asx_service.get_financials(symbol, period=backend_period, provider=provider))
@@ -645,7 +727,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX income statement: {e}")
 
-    def get_asx_balance_sheet(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
+    def get_au_balance_sheet(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
         backend_period = "quarterly" if period.upper().startswith("Q") else "annual"
         try:
             data = _run_async(asx_service.get_financials(symbol, period=backend_period, provider=provider))
@@ -677,7 +759,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX balance sheet: {e}")
 
-    def get_asx_balance_sheet(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
+    def get_au_balance_sheet(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
         backend_period = "quarterly" if period.upper().startswith("Q") else "annual"
         try:
             data = _run_async(asx_service.get_financials(symbol, period=backend_period, provider=provider))
@@ -709,7 +791,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX balance sheet: {e}")
 
-    def get_asx_cashflow(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
+    def get_au_cashflow(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
         backend_period = "quarterly" if period.upper().startswith("Q") else "annual"
         try:
             data = _run_async(asx_service.get_financials(symbol, period=backend_period, provider=provider))
@@ -741,7 +823,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX cashflow statement: {e}")
 
-    def get_asx_ratios(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
+    def get_au_ratios(self, symbol: str, period: str = "annual", provider: Optional[str] = None) -> List[FinancialItem]:
         backend_period = "quarterly" if period.upper().startswith("Q") else "annual"
         try:
             data = _run_async(asx_service.get_financials(symbol, period=backend_period, provider=provider))
@@ -763,7 +845,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX financial ratios: {e}")
 
-    def get_asx_dividends(self, symbol: str, provider: Optional[str] = None) -> ASXDividends:
+    def get_au_dividends(self, symbol: str, provider: Optional[str] = None) -> ASXDividends:
         try:
             raw_divs = _run_async(asx_service.get_dividends(symbol, provider=provider))
             provider_name = raw_divs[0].get("provider", self.name) if raw_divs else self.name
@@ -785,7 +867,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX Dividends: {e}")
 
-    def get_asx_announcements(self, symbol: str, provider: Optional[str] = None) -> ASXAnnouncements:
+    def get_au_announcements(self, symbol: str, provider: Optional[str] = None) -> ASXAnnouncements:
         try:
             raw_announcements = _run_async(asx_service.get_announcements(symbol, provider=provider))
             provider_name = raw_announcements[0].get("provider", self.name) if raw_announcements else self.name
@@ -807,7 +889,7 @@ class CoreProvider(BaseProvider):
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX Announcements: {e}")
 
-    def get_asx_news(self, symbol: str, provider: Optional[str] = None) -> ASXNews:
+    def get_au_news(self, symbol: str, provider: Optional[str] = None) -> ASXNews:
         try:
             raw_news = _run_async(asx_service.get_news(symbol, provider=provider))
             provider_name = raw_news[0].get("provider", self.name) if raw_news else self.name
@@ -829,6 +911,151 @@ class CoreProvider(BaseProvider):
             )
         except Exception as e:
             raise DataParseError(f"Failed to fetch/parse ASX News: {e}")
+
+    # --- VN Endpoints ---
+    def get_vn_symbols(self, provider: Optional[str] = None) -> List[str]:
+        try:
+            return _run_async(vn_stock_service.get_symbols(provider=provider))
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Symbols: {e}")
+
+    def get_vn_ohlcv(self, symbol: str, resolution: str, from_date: str, to_date: str, provider: Optional[str] = None) -> List[OHLCVBar]:
+        try:
+            res = _run_async(vn_stock_service.get_ohlcv(symbol, resolution, from_date, to_date, provider))
+            if not res:
+                return []
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN OHLCV: {e}")
+
+    def get_vn_profile(self, symbol: str, provider: Optional[str] = None) -> CompanyProfile:
+        try:
+            res = _run_async(vn_stock_service.get_profile(symbol, provider))
+            if not res:
+                raise ValueError(f"No profile data returned for symbol '{symbol}'")
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Profile: {e}")
+
+    def get_vn_financials(self, symbol: str, period: str = "quarter", provider: Optional[str] = None) -> List[FinancialItem]:
+        try:
+            res = _run_async(vn_stock_service.get_financials(symbol, "financials", period, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Financials: {e}")
+
+    def get_vn_balance_sheet(self, symbol: str, period: str = "quarter", provider: Optional[str] = None) -> List[FinancialItem]:
+        try:
+            res = _run_async(vn_stock_service.get_financials(symbol, "balance", period, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Balance Sheet: {e}")
+
+    def get_vn_income_statement(self, symbol: str, period: str = "quarter", provider: Optional[str] = None) -> List[FinancialItem]:
+        try:
+            res = _run_async(vn_stock_service.get_financials(symbol, "income", period, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Income Statement: {e}")
+
+    def get_vn_cashflow(self, symbol: str, period: str = "quarter", provider: Optional[str] = None) -> List[FinancialItem]:
+        try:
+            res = _run_async(vn_stock_service.get_financials(symbol, "cashflow", period, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Cashflow: {e}")
+
+    def get_vn_ratios(self, symbol: str, period: str = "quarter", provider: Optional[str] = None) -> List[FinancialItem]:
+        try:
+            res = _run_async(vn_stock_service.get_financials(symbol, "ratios", period, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Ratios: {e}")
+
+    def get_vn_derivative_profile(self, symbol: str, provider: Optional[str] = None) -> DerivativeProfile:
+        try:
+            res = _run_async(vn_stock_service.get_derivative_profile(symbol, provider))
+            if not res:
+                raise ValueError(f"No derivative profile returned for symbol '{symbol}'")
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Derivative Profile: {e}")
+
+    def get_vn_quote(self, symbol: str, provider: Optional[str] = None) -> RealtimeQuote:
+        try:
+            res = _run_async(vn_stock_service.get_quote(symbol, provider))
+            if not res:
+                raise ValueError(f"No quote returned for symbol '{symbol}'")
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Quote: {e}")
+
+    def get_vn_order_book(self, symbol: str, provider: Optional[str] = None) -> OrderBook:
+        try:
+            res = _run_async(vn_stock_service.get_order_book(symbol, provider))
+            if not res:
+                raise ValueError(f"No order book returned for symbol '{symbol}'")
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Order Book: {e}")
+
+    def get_vn_macro_indicators(self, provider: Optional[str] = None) -> List[Any]:
+        try:
+            res = _run_async(vn_stock_service.get_macro_indicators(provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Macro Indicators: {e}")
+
+    def get_vn_fund_details(self, fund_id: int, provider: Optional[str] = None) -> FundItem:
+        try:
+            res = _run_async(vn_stock_service.get_fund_details(fund_id, provider))
+            if not res:
+                raise ValueError(f"No fund details returned for fund_id '{fund_id}'")
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Fund Details: {e}")
+
+    def get_vn_company_news(self, symbol: str, provider: Optional[str] = None) -> List[NewsItem]:
+        try:
+            res = _run_async(vn_stock_service.get_news(symbol, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN News: {e}")
+
+    def get_vn_company_events(self, symbol: str, provider: Optional[str] = None) -> List[CompanyEventEntry]:
+        try:
+            res = _run_async(vn_stock_service.get_events(symbol, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Events: {e}")
+
+    def get_vn_foreign_trading(self, symbol: str, provider: Optional[str] = None) -> List[Any]:
+        try:
+            res = _run_async(vn_stock_service.get_foreign_trading(symbol, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Foreign Trading: {e}")
+
+    def get_vn_prop_trading(self, symbol: str, provider: Optional[str] = None) -> List[Any]:
+        try:
+            res = _run_async(vn_stock_service.get_prop_trading(symbol, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Prop Trading: {e}")
+
+    def get_vn_insider_trading(self, symbol: str, provider: Optional[str] = None) -> List[Any]:
+        try:
+            res = _run_async(vn_stock_service.get_insider_trading(symbol, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Insider Trading: {e}")
+
+    def get_vn_ticks(self, symbol: str, provider: Optional[str] = None) -> List[IntradayTick]:
+        try:
+            res = _run_async(vn_stock_service.get_intraday_ticks(symbol, provider))
+            return res
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Ticks: {e}")
 
     # --- US Endpoints ---
     def get_us_ohlcv(self, symbol: str, range: str = "5d", interval: str = "1h", provider: Optional[str] = None) -> List[OHLCVBar]:
@@ -870,6 +1097,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item["market_cap"],
                     sector=item["sector"],
                     industry=item["industry"],
@@ -1357,6 +1586,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item["market_cap"],
                     sector=item["sector"],
                     industry=item["industry"],
@@ -1679,6 +1910,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item["market_cap"],
                     sector=item["sector"],
                     industry=item["industry"],
@@ -1960,6 +2193,8 @@ class CoreProvider(BaseProvider):
                     symbol=item["symbol"],
                     name=item["name"],
                     change=item["change"],
+                    price=item.get("price"),
+                    change_pct=item.get("change_pct"),
                     market_cap=item["market_cap"],
                     sector=item["sector"],
                     industry=item["industry"],

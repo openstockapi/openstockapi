@@ -19,8 +19,11 @@ class CryptoRSSNewsProvider(CryptoBaseProvider):
         return None
 
     async def get_news(self, limit: int = 20) -> List[Dict[str, Any]]:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=10.0, headers=headers, follow_redirects=True) as client:
                 res = await client.get(self.feed_url)
                 if res.status_code == 200:
                     root = ET.fromstring(res.content)

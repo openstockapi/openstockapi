@@ -234,6 +234,7 @@ Dữ liệu Ngoại hối và Hàng hóa được cung cấp thông qua **OpenSt
 
 ```
 openstockapi
+├── symbols()                # Lấy danh sách mã chứng khoán (symbols)
 ├── ohlcv()                  # Lịch sử OHLCV Stock (đồng bộ)
 ├── async_ohlcv()            # Lịch sử OHLCV Stock (bất đồng bộ)
 ├── profile()                # Hồ sơ doanh nghiệp Stock

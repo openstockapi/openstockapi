@@ -178,6 +178,25 @@ class ProviderCapabilityRegistry:
                     asset_class, market, function, market_method,
                 )
                 return market_method
+            
+            # Fallback for news and calendar/events naming mismatches
+            if function == "company_news":
+                alt_method = f"get_{prefix}_news"
+                if hasattr(provider, alt_method):
+                    logger.debug(
+                        "Registry: market-prefix news fallback [%s.%s.%s] -> %s",
+                        asset_class, market, function, alt_method,
+                    )
+                    return alt_method
+            elif function == "company_events":
+                for alt_name in ["calendar", "events"]:
+                    alt_method = f"get_{prefix}_{alt_name}"
+                    if hasattr(provider, alt_method):
+                        logger.debug(
+                            "Registry: market-prefix events fallback [%s.%s.%s] -> %s",
+                            asset_class, market, function, alt_method,
+                        )
+                        return alt_method
 
         # 3. Universal method map
         if function in self.UNIVERSAL_METHOD_MAP:

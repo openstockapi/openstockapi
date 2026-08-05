@@ -35,7 +35,7 @@ def test_pro_tier_allowed_by_server(monkeypatch):
     set_current_session(Session("pro"))
     mock_resp = _mock_validate_response(allowed=True, tier="pro")
 
-    from openstockapi.providers.vn_stock.providers.dnse import DNSEProvider
+    from openstockapi.providers.vn_stock.providers.vci import VCIProvider
     from openstockapi.core.models import RealtimeQuote
     from datetime import datetime
 
@@ -47,14 +47,14 @@ def test_pro_tier_allowed_by_server(monkeypatch):
             pct_change=0.64,
             volume=1000000,
             timestamp=datetime.now(),
-            provider="dnse"
+            provider="vci"
         )
 
-    monkeypatch.setattr(DNSEProvider, "get_vn_quote", mock_quote, raising=False)
+    monkeypatch.setattr(VCIProvider, "get_realtime_quote", mock_quote, raising=False)
     with patch("httpx.post", return_value=mock_resp):
         res = stock.quote("VNM")
         assert res["price"] == 78000.0
-        assert res["provider"] == "dnse"
+        assert res["provider"] == "vci"
 
 
 def test_rate_limit_exceeded_by_server():

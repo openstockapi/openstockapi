@@ -216,15 +216,15 @@ class CryptoService:
         """Fetches all active option/future instruments with failover/override support."""
         if provider:
             p, name = self._select_provider("", provider)
-            if p and hasattr(p, "get_options_instruments"):
-                res = await p.get_options_instruments(currency, kind)
+            if p:
+                if hasattr(p, "get_options_instruments"):
+                    res = await p.get_options_instruments(currency, kind)
+                elif hasattr(p, "get_instruments"):
+                    res = await p.get_instruments(currency, kind)
+                else:
+                    res = []
                 for r in res:
                     r["provider"] = name
-                return res
-            if p == self.okx_provider:
-                res = await self.okx_provider.get_options_instruments(currency, kind)
-                for r in res:
-                    r["provider"] = "okx"
                 return res
             return []
 

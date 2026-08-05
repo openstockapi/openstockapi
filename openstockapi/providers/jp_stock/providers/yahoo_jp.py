@@ -9,6 +9,8 @@ class YahooJPProvider:
 
     def _format_symbol(self, symbol: str) -> str:
         sym_norm = symbol.upper().strip()
+        if sym_norm.startswith("^"):
+            return sym_norm
         if not sym_norm.endswith(".T"):
             return f"{sym_norm}.T"
         return sym_norm

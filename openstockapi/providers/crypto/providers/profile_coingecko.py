@@ -28,7 +28,21 @@ class CoinGeckoProfileProvider(CryptoBaseProvider):
 
     async def get_profile(self, symbol: str) -> Optional[Dict[str, Any]]:
         sym_upper = symbol.upper().strip()
-        cg_id = self._SYMBOL_TO_ID.get(sym_upper, sym_upper.lower())
+        
+        # Clean symbol to get the base asset (e.g. BTCUSDT -> BTC, BTC-USD -> BTC)
+        clean_sym = sym_upper
+        for delimiter in ("-", "/", "_"):
+            if delimiter in clean_sym:
+                clean_sym = clean_sym.split(delimiter)[0]
+                break
+                
+        suffixes = ("USDT", "USDC", "BUSD", "TUSD", "USD", "EUR")
+        for suffix in suffixes:
+            if clean_sym.endswith(suffix) and len(clean_sym) > len(suffix):
+                clean_sym = clean_sym[:-len(suffix)]
+                break
+                
+        cg_id = self._SYMBOL_TO_ID.get(clean_sym, clean_sym.lower())
         url = f"https://api.coingecko.com/api/v3/coins/{cg_id}"
         
         try:

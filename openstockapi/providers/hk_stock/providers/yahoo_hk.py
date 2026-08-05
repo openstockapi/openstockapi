@@ -9,6 +9,8 @@ class YahooHKProvider:
 
     def _format_symbol(self, symbol: str) -> str:
         sym = symbol.upper().strip()
+        if sym.startswith("^"):
+            return sym
         if sym.endswith(".HK"):
             return sym
         digits = ''.join(c for c in sym if c.isdigit())

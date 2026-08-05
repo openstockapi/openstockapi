@@ -26,6 +26,7 @@ class VCIProvider(BaseStockProvider):
         "get_prop_trading",
         "get_insider_trading",
         "get_company_events",
+        "get_vn_symbols",
     ]
 
     def get_ohlcv(self, symbol: str, resolution: str, from_date: str, to_date: str) -> List[OHLCVBar]:
@@ -33,6 +34,13 @@ class VCIProvider(BaseStockProvider):
         from_dt = parse_date(from_date) if from_date else parse_date("2020-01-01")
         to_dt = parse_date(to_date) if to_date else datetime.now()
         
+        # Map unified index symbols to VCI case-sensitive symbols
+        vci_symbol = symbol
+        if symbol.upper() == "HNXINDEX":
+            vci_symbol = "HNXIndex"
+        elif symbol.upper() == "UPCOMINDEX":
+            vci_symbol = "HNXUpcomIndex"
+
         to_ts = int(to_dt.timestamp())
         tf_map = {"1D": "ONE_DAY", "1W": "ONE_WEEK", "1M": "ONE_MONTH"}
         tf = tf_map.get(resolution, "ONE_DAY")
@@ -40,7 +48,7 @@ class VCIProvider(BaseStockProvider):
         
         payload = {
             "timeFrame": tf,
-            "symbols": [symbol],
+            "symbols": [vci_symbol],
             "to": to_ts,
             "countBack": max(10, count)
         }
@@ -89,6 +97,13 @@ class VCIProvider(BaseStockProvider):
         from_dt = parse_date(from_date) if from_date else parse_date("2020-01-01")
         to_dt = parse_date(to_date) if to_date else datetime.now()
         
+        # Map unified index symbols to VCI case-sensitive symbols
+        vci_symbol = symbol
+        if symbol.upper() == "HNXINDEX":
+            vci_symbol = "HNXIndex"
+        elif symbol.upper() == "UPCOMINDEX":
+            vci_symbol = "HNXUpcomIndex"
+
         to_ts = int(to_dt.timestamp())
         tf_map = {"1D": "ONE_DAY", "1W": "ONE_WEEK", "1M": "ONE_MONTH"}
         tf = tf_map.get(resolution, "ONE_DAY")
@@ -96,7 +111,7 @@ class VCIProvider(BaseStockProvider):
         
         payload = {
             "timeFrame": tf,
-            "symbols": [symbol],
+            "symbols": [vci_symbol],
             "to": to_ts,
             "countBack": max(10, count)
         }
@@ -548,4 +563,40 @@ class VCIProvider(BaseStockProvider):
             timestamp=timestamp,
             provider=self.name
         )
+
+    def get_vn_symbols(self) -> List[str]:
+        url = "https://iq.vietcap.com.vn/api/iq-insight-service/v2/company/search-bar"
+        headers = self._get_headers()
+        try:
+            res = http_client.request("GET", url, params={"language": "2"}, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                items = data.get("data", []) if isinstance(data, dict) else data
+                symbols = []
+                for item in items:
+                    if isinstance(item, dict) and item.get("code"):
+                        symbols.append(item["code"].upper().strip())
+                if symbols:
+                    return sorted(list(set(symbols)))
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse VN Symbols from VCI: {e}")
+        return []
+
+    async def async_get_vn_symbols(self) -> List[str]:
+        url = "https://iq.vietcap.com.vn/api/iq-insight-service/v2/company/search-bar"
+        headers = self._get_headers()
+        try:
+            res = await http_client.async_request("GET", url, params={"language": "2"}, headers=headers)
+            if res.status_code == 200:
+                data = res.json()
+                items = data.get("data", []) if isinstance(data, dict) else data
+                symbols = []
+                for item in items:
+                    if isinstance(item, dict) and item.get("code"):
+                        symbols.append(item["code"].upper().strip())
+                if symbols:
+                    return sorted(list(set(symbols)))
+        except Exception as e:
+            raise DataParseError(f"Failed to fetch/parse async VN Symbols from VCI: {e}")
+        return []
 

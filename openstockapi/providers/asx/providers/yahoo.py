@@ -9,11 +9,17 @@ class YahooASXProvider:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
 
+    def _format_symbol(self, symbol: str) -> str:
+        sym = symbol.upper().strip()
+        if sym.startswith("^"):
+            return sym
+        if not sym.endswith(".AX"):
+            return f"{sym}.AX"
+        return sym
+
     async def get_ohlcv(self, symbol: str, range_str: str = "5d", interval_str: str = "1h") -> Optional[Dict[str, Any]]:
         # Normalize symbol: BHP -> BHP.AX
-        sym_norm = symbol.upper()
-        if not sym_norm.endswith(".AX"):
-            sym_norm = f"{sym_norm}.AX"
+        sym_norm = self._format_symbol(symbol)
             
         url = f"https://query1.finance.yahoo.com/v7/finance/chart/{sym_norm}"
         params = {
@@ -54,9 +60,7 @@ class YahooASXProvider:
         return None
 
     async def get_profile(self, symbol: str) -> Optional[Dict[str, Any]]:
-        sym_norm = symbol.upper()
-        if not sym_norm.endswith(".AX"):
-            sym_norm = f"{sym_norm}.AX"
+        sym_norm = self._format_symbol(symbol)
             
         try:
             def _fetch():
@@ -93,9 +97,7 @@ class YahooASXProvider:
         return None
 
     async def get_financials(self, symbol: str, period: str = "annual") -> Optional[Dict[str, Any]]:
-        sym_norm = symbol.upper()
-        if not sym_norm.endswith(".AX"):
-            sym_norm = f"{sym_norm}.AX"
+        sym_norm = self._format_symbol(symbol)
 
         is_quarterly = (period.lower() == "quarterly")
             
@@ -275,9 +277,7 @@ class YahooASXProvider:
         return None
 
     async def get_dividends(self, symbol: str) -> List[Dict[str, Any]]:
-        sym_norm = symbol.upper()
-        if not sym_norm.endswith(".AX"):
-            sym_norm = f"{sym_norm}.AX"
+        sym_norm = self._format_symbol(symbol)
         try:
             def _fetch():
                 ticker = yf.Ticker(sym_norm)
@@ -300,9 +300,7 @@ class YahooASXProvider:
         return []
 
     async def get_news(self, symbol: str) -> List[Dict[str, Any]]:
-        sym_norm = symbol.upper()
-        if not sym_norm.endswith(".AX"):
-            sym_norm = f"{sym_norm}.AX"
+        sym_norm = self._format_symbol(symbol)
         try:
             def _fetch():
                 ticker = yf.Ticker(sym_norm)

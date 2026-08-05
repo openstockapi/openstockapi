@@ -49,11 +49,17 @@ class KBSHeatmapProvider:
                                 change_pct = float(item.get("CHPE", 0.0) or 0.0)
                             except (ValueError, TypeError):
                                 change_pct = 0.0
+                            try:
+                                current_price = float(item.get("PRI") or item.get("pri") or item.get("c") or item.get("close") or 0.0)
+                            except (ValueError, TypeError):
+                                current_price = 0.0
                             name = item.get("NAME_EN") or item.get("NAME") or symbol
                             results[symbol] = {
                                 "symbol": symbol,
                                 "name": name,
                                 "change": change_pct,
+                                "change_pct": change_pct,
+                                "price": current_price,
                                 "market_cap": None,        # Not available from KBS
                                 "sector": "Unknown",       # Not available from KBS
                                 "industry": "Unknown",     # Not available from KBS

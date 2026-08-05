@@ -203,6 +203,8 @@ class HeatmapItem(BaseModel):
     symbol: str
     name: str
     change: float
+    price: Optional[float] = None
+    change_pct: Optional[float] = None
     market_cap: Optional[float] = None
     sector: str
     industry: str

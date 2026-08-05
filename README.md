@@ -224,6 +224,7 @@ Forex and Commodities data is sourced through the **OpenStockAPI Core Engine** w
 
 ```
 openstockapi
+├── symbols()                # Get list of active stock symbols
 ├── ohlcv()                  # Historical Stock OHLCV (sync)
 ├── async_ohlcv()            # Historical Stock OHLCV (async)
 ├── profile()                # Stock Company profile
